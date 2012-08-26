@@ -30,11 +30,11 @@ def pearsonchisquare(d):
 # Ported from chisq.c from random.zip; http://www.fourmilab.ch/random/
 
 def _poz(z):
-    '''Probability of normal z value. returns cumulative probability
+    '''Probability of normal z value. Returns cumulative probability
     from -∞ to z. Adapted from a polynomial approximation in:
     "Ibbetson D, Algorithm 209, Collected Algorithms of the CACM 1963
     p. 616" Note: This routine has six digit accuracy, so it is only
-    useful for a bsolute z values < 6.  For z values >= to 6.0, poz()
+    useful for absolute z values < 6.  For z values >= to 6.0, poz()
     returns 0.0.
 
     Arguments:
@@ -68,13 +68,6 @@ def _poz(z):
         return (x + 1.0) * 0.5
     return (1.0 - x) * 0.5
 
-_BIGX = 20.0
-
-def _ex(x):
-    if x < -_BIGX:
-        return 0.0
-    return math.exp(x)
-
 def pochisq(x, df=255):
     '''Compute probability of χ² test value. Adapted from: Hill,
     I. D. and Pike, M. C.  Algorithm 299 Collected Algorithms for the
@@ -95,42 +88,42 @@ def pochisq(x, df=255):
     x -- obtained chi-square value
     df -- degrees of freedom, defaults to 255 for random bytes.
     '''
-    LOG_SQRT_PI = 0.5723649429247000870717135 # log(√π)
-    I_SQRT_PI = 0.5641895835477562869480795 # 1/√π
-    if x <= 0.0 or df < 1:
-        return 1.0
-    a = 0.5 * x
+    # Check arguments first
     if not isinstance(df, int):
         raise ValueError('df must be an integer')
-    even = 2 * (df / 2) == df
+    if x <= 0.0 or df < 1:
+        return 1.0
+    # Constants
+    LOG_SQRT_PI = 0.5723649429247000870717135 # log(√π)
+    I_SQRT_PI = 0.5641895835477562869480795 # 1/√π
+    BIGX = 20.0
+    a = 0.5 * x
+    ev = 2 * (df / 2) == df
+    # Helper functions.
+    def even(t, f, w=ev):
+        if w:
+            return t
+        return f
+    def ex(x):
+        if x < -BIGX:
+            return 0.0
+        return math.exp(x)
     if df > 1:
-        y = _ex(-a)
-    if even:
-        s = y
-    else:
-        s = 2.0 * _poz(-math.sqrt(x))
+        y = ex(-a)
+    s = even(y, 2.0 * _poz(-math.sqrt(x)))
     if df > 2:
         x = 0.5 * (df - 1.0)
-        if even:
-            z = 1.0
-        else:
-            z = 0.5
-        if a > _BIGX:
-            if even:
-                e = 0
-            else:
-                e = LOG_SQRT_PI
+        z = even(1.0, 0.5)
+        if a > BIGX:
+            e = even(0, LOG_SQRT_PI)
             c = math.log(a)
             while z <= x:
                 e = math.log(z) + e
-                s += _ex(c * z - a - e)
+                s += ex(c * z - a - e)
                 z += 1.0
             return s
         else:
-            if even:
-                e = 1.0
-            else:
-                e = I_SQRT_PI / math.sqrt(a)
+            e = even(1.0, I_SQRT_PI / math.sqrt(a))
             c = 0.0
             while z <= x:
                 e = e * (a / z)
