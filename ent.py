@@ -8,26 +8,61 @@
 # chisquare.py. This work is published from the Netherlands. See
 # http://creativecommons.org/publicdomain/zero/1.0/
 
-from collections import defaultdict
 import math
+from os.path import getsize
 
-def pearsonchisquare(d):
+
+def readdata(name):
+    """Read the data from a file and count how often each byte value
+    occurs.
+
+    Arguments:
+    name -- name of the file to read the data from
+    """
+    with open(name, 'rb') as f:
+        ba = bytearray(getsize(name))
+        f.readinto(ba)
+    counts = [0]*256
+    for b in ba:
+        counts[b] += 1
+    return ba, counts
+
+def pearsonchisquare(d, counts=None):
     '''Calculate Pearson's χ² (chi square) test for an array of bytes. 
     See [http://en.wikipedia.org/wiki/Pearson%27s_chi-squared_test
     #Discrete_uniform_distribution]
 
     Arguments:
-    d -- data that is or can be converted to an array of bytes.
+    d      -- data that is or can be converted to an array of bytes.
+    counts -- list of counts for all byte values.
     '''
     if not isinstance(d, bytearray):
         d = bytearray(d)
     np = len(d)/256.0
-    od = defaultdict(int)
-    for b in d:
-        od[b] += 1
-    return sum([(od[b] - np)**2/np for b in range(256)])
+    if not counts:
+        counts = [0]*256
+        for b in d:
+            counts[b] += 1
+    return sum([(counts[b] - np)**2/np for b in range(256)])
 
-# Ported from chisq.c from random.zip; http://www.fourmilab.ch/random/
+def entropy(counts):
+    """Calculate the entropy of the data represented by the counts
+    list. Returns the entropy in bits/byte.
+
+    Arguments:
+    counts -- list of counts for all byte values.
+    """
+    ent = 0.0
+    sz = sum(counts)
+    for b in counts:
+        if b == 0:
+            continue
+        p = float(b)/sz
+        ent -= p*math.log(p, 256)
+    return ent*8
+
+# _poz() and pochisq() are ported from chisq.c from random.zip;
+# http://www.fourmilab.ch/random/
 
 def _poz(z):
     '''Probability of normal z value. Returns cumulative probability
@@ -133,12 +168,34 @@ def pochisq(x, df=255):
     else:
         return s
 
+def main(args):
+    if not args:
+        args = ['test/random.dat']
+    for fname in args:
+        data, cnts = readdata(fname)
+        print 'File "{}"'.format(fname)
+        e = entropy(cnts)
+        print '- Entropy is {:.6f} bits/byte.'.format(e)
+        avg = sum(data)/float(len(data))
+        outs = '- Arithmetic mean value of data bytes is {:.4f}'
+        print outs.format(avg), '(random = 127.5).'
+        c = pearsonchisquare(data, cnts)
+        p = pochisq(c)
+        outs = '- χ² distribution for {} samples is {:.2f}, and randomly'
+        print outs.format(len(data), c)
+        outs = '  would exceed this value {:.2f} percent of the times.'
+        print outs.format(p*100)
+        d = math.fabs(p*100-50)
+        print "- According to the χ² test, this sequence",
+        if d > 49:
+            print "is almost certainly not random"
+        elif d > 45:
+            print "is suspected of being not-random."
+        elif d > 40:
+            print "is close to random, but not perfect."
+        else:
+            print "looks random."
+
+
 if __name__ == '__main__':
-    with open('test/random.dat', 'r') as datafile:
-        data = datafile.read()
-    c = pearsonchisquare(data)
-    p = pochisq(c)
-    outs = 'Chi square distribution for {} samples is {:.2f}, and randomly'
-    print outs.format(len(data), c)
-    outs = 'would exceed this value {:.2f} percent of the times.'
-    print outs.format(p*100)
+    main(None)
