@@ -10,7 +10,7 @@
 
 import math
 from os.path import getsize
-
+import sys
 
 def readdata(name):
     """Read the data from a file and count how often each byte value
@@ -47,7 +47,7 @@ def pearsonchisquare(d, counts=None):
 
 def entropy(counts):
     """Calculate the entropy of the data represented by the counts
-    list. Returns the entropy in bits/byte.
+    list. Returns the entropy in bits per byte.
 
     Arguments:
     counts -- list of counts for all byte values.
@@ -62,7 +62,7 @@ def entropy(counts):
     return ent*8
 
 # _poz() and pochisq() are ported from chisq.c from random.zip;
-# http://www.fourmilab.ch/random/
+# http://www.fourmilab.ch/random/ (also in the public domain)
 
 def _poz(z):
     '''Probability of normal z value. Returns cumulative probability
@@ -153,7 +153,7 @@ def pochisq(x, df=255):
             e = even(0, LOG_SQRT_PI)
             c = math.log(a)
             while z <= x:
-                e = math.log(z) + e
+                e += math.log(z)
                 s += ex(c * z - a - e)
                 z += 1.0
             return s
@@ -161,21 +161,27 @@ def pochisq(x, df=255):
             e = even(1.0, I_SQRT_PI / math.sqrt(a))
             c = 0.0
             while z <= x:
-                e = e * (a / z)
+                e *= (a / z)
                 c += e
                 z += 1.0
             return c * y + s
     else:
         return s
 
-def main(args):
+def main(args=None):
+    '''Calculates and prints figures about the randomness of the input
+    files. Use test data if no arguments given
+
+    Arguments:
+    args -- list of input files
+    '''
     if not args:
         args = ['test/random.dat']
     for fname in args:
         data, cnts = readdata(fname)
         print 'File "{}"'.format(fname)
         e = entropy(cnts)
-        print '- Entropy is {:.6f} bits/byte.'.format(e)
+        print '- Entropy is {:.6f} bits per byte.'.format(e)
         avg = sum(data)/float(len(data))
         outs = '- Arithmetic mean value of data bytes is {:.4f}'
         print outs.format(avg), '(random = 127.5).'
@@ -190,12 +196,11 @@ def main(args):
         if d > 49:
             print "is almost certainly not random"
         elif d > 45:
-            print "is suspected of being not-random."
+            print "is suspected of being not random."
         elif d > 40:
             print "is close to random, but not perfect."
         else:
             print "looks random."
 
-
 if __name__ == '__main__':
-    main(None)
+    main(sys.argv[1:])
