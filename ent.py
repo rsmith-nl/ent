@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# $Date$
+# Last modified: 2015-05-28 00:07:33 +0200
 #
 # To the extent possible under law, Roland Smith has waived all
 # copyright and related or neighboring rights to the original works in
@@ -188,9 +188,8 @@ def main(args=None):
         print('File "{}"'.format(fname))
         e = entropy(cnts)
         print('- Entropy is {:.6f} bits per byte.'.format(e))
-        avg = sum(data)/float(len(data))
         outs = '- Arithmetic mean value of data bytes is {:.4f}'
-        print(outs.format(avg), '(random = 127.5).')
+        print(outs.format(data.mean()), '(random = 127.5).')
         c = pearsonchisquare(data, cnts)
         p = pochisq(c)
         outs = '- χ² distribution for {} samples is {:.2f}, and randomly'
