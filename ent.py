@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-05-28 00:14:17 +0200
+# Last modified: 2015-05-28 00:27:21 +0200
 #
 # To the extent possible under law, Roland Smith has waived all
 # copyright and related or neighboring rights to the original works in
@@ -54,6 +54,7 @@ def entropy(counts):
         counts: numpy array of counts for all byte values.
     """
     ent = 0.0
+    counts = np.trim_zeros(np.sort(counts))
     sz = sum(counts)
     p = counts/sz
     ent = -sum(p * np.log(p)/math.log(256))
