@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-05-28 00:07:33 +0200
+# Last modified: 2015-05-28 00:14:17 +0200
 #
 # To the extent possible under law, Roland Smith has waived all
 # copyright and related or neighboring rights to the original works in
@@ -25,9 +25,7 @@ def readdata(name):
         data: numpy array containing the byte values.
         cnts: numpy array containing the occurance of each byte.
     """
-    with open(name, 'rb') as f:
-        ba = f.read()
-    data = np.array([b for b in ba])
+    data = np.fromfile(name, np.ubyte)
     cnts = np.bincount(data)
     return data, cnts
 
