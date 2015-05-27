@@ -8,9 +8,10 @@
 # chisquare.py. This work is published from the Netherlands. See
 # http://creativecommons.org/publicdomain/zero/1.0/
 
-import math
 from os.path import getsize
+import math
 import sys
+import numpy as np
 
 
 def readdata(name):
@@ -18,50 +19,46 @@ def readdata(name):
     occurs.
 
     Arguments:
-    name -- name of the file to read the data from
+        name: Path of the file to read
+
+    Returns:
+        data: numpy array containing the byte values.
+        cnts: numpy array containing the occurance of each byte.
     """
     with open(name, 'rb') as f:
-        ba = bytearray(getsize(name))
-        f.readinto(ba)
-    counts = [0]*256
-    for b in ba:
-        counts[b] += 1
-    return ba, counts
+        ba = f.read()
+    data = np.array([b for b in ba])
+    cnts = np.bincount(data)
+    return data, cnts
 
 
-def pearsonchisquare(d, counts=None):
+def pearsonchisquare(d, counts):
     """Calculate Pearson's χ² (chi square) test for an array of bytes.
     See [http://en.wikipedia.org/wiki/Pearson%27s_chi-squared_test
     #Discrete_uniform_distribution]
 
     Arguments:
-    d      -- data that is or can be converted to an array of bytes.
-    counts -- list of counts for all byte values.
+        d: Numpy array of byte values
+        counts: Numpy array of counts.
+
+    Returns:
+        χ² value
     """
-    if not isinstance(d, bytearray):
-        d = bytearray(d)
-    np = len(d)/256.0
-    if not counts:
-        counts = [0]*256
-        for b in d:
-            counts[b] += 1
-    return sum([(counts[b] - np)**2/np for b in range(256)])
+    np = len(d)/256
+    return sum((counts - np)**2/np)
 
 
 def entropy(counts):
     """Calculate the entropy of the data represented by the counts
-    list. Returns the entropy in bits per byte.
+    array. Returns the entropy in bits per byte.
 
     Arguments:
-    counts -- list of counts for all byte values.
+        counts: numpy array of counts for all byte values.
     """
     ent = 0.0
     sz = sum(counts)
-    for b in counts:
-        if b == 0:
-            continue
-        p = float(b)/sz
-        ent -= p*math.log(p, 256)
+    p = counts/sz
+    ent = -sum(p * np.log(p)/math.log(256))
     return ent*8
 
 # _poz() and pochisq() are ported from chisq.c from random.zip;
