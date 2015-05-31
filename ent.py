@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-05-31 01:04:17 +0200
+# Last modified: 2015-05-31 13:12:50 +0200
 #
 # To the extent possible under law, Roland Smith has waived all
 # copyright and related or neighboring rights to the original works in
@@ -16,48 +16,70 @@ See http://www.fourmilab.ch/random/ for the original.
 """
 
 from os.path import getsize
+import argparse
 import math
 import sys
 import numpy as np
 
+__version__ = '0.3.0'
 
-def main(args=None):
+
+def main(argv):
     """
     Calculates and prints figures about the randomness of the input files.
 
     Arguments:
-        args: List of input files.
+        argv: Program options.
     """
-    for fname in args:
+    opts = argparse.ArgumentParser(prog='ent', description=__doc__)
+    opts.add_argument('-c', action='store_true',
+                      help="print occurrence counts (not implemented yet)")
+    opts.add_argument('-t', action='store_true',
+                      help="terse output in CSV format (not implemented yet)")
+    opts.add_argument('-v', '--version', action='version',
+                      version=__version__)
+    opts.add_argument("files", metavar='file', nargs='*',
+                      help="one or more files to process")
+    args = opts.parse_args(argv)
+    for fname in args.files:
         data, cnts = readdata(fname)
-        print('File "{}"'.format(fname))
         e = entropy(cnts)
-        print('- Entropy is {:.6f} bits per byte.'.format(e))
-        outs = '- Arithmetic mean value of data bytes is {:.4f}'
-        print(outs.format(data.mean()), '(random = 127.5).')
         c = pearsonchisquare(data, cnts)
         p = pochisq(c)
-        outs = '- χ² distribution for {} samples is {:.2f}, and randomly'
-        print(outs.format(len(data), c))
-        outs = '  would exceed this value {:.2f} percent of the times.'
-        print(outs.format(p*100))
         d = math.fabs(p*100-50)
-        print("  According to the χ² test, this sequence", end=' ')
-        if d > 49:
-            print("is almost certainly not random")
-        elif d > 45:
-            print("is suspected of being not random.")
-        elif d > 40:
-            print("is close to random, but not perfect.")
-        else:
-            print("looks random.")
         try:
-            print("- Serial correlation coefficient is ", end="")
             scc = correlation(data)
-            es = "{:.6f} (totally uncorrelated = 0.0)"
-            print(es.format(scc))
         except ValueError:
-            print("undefined.")
+            scc = 'undefined'
+        textout(fname, data, e, c, p, d, scc)
+
+
+def textout(name, data, e, chi2, p, d, scc):
+    """
+    Print the results in plain text.
+    """
+    print('File "{}"'.format(name))
+    print('- Entropy is {:.6f} bits per byte.'.format(e))
+    outs = '- Arithmetic mean value of data bytes is {:.4f}'
+    print(outs.format(data.mean()), '(random = 127.5).')
+    outs = '- χ² distribution for {} samples is {:.2f}, and randomly'
+    print(outs.format(len(data), chi2))
+    outs = '  would exceed this value {:.2f} percent of the times.'
+    print(outs.format(p*100))
+    print("  According to the χ² test, this sequence", end=' ')
+    if d > 49:
+        print("is almost certainly not random")
+    elif d > 45:
+        print("is suspected of being not random.")
+    elif d > 40:
+        print("is close to random, but not perfect.")
+    else:
+        print("looks random.")
+    if isinstance(scc, np.float64):
+        es = "{:.6f} (totally uncorrelated = 0.0)".format(scc)
+    else:
+        es = scc
+    print("- Serial correlation coefficient is", es)
 
 
 def readdata(name):
@@ -84,7 +106,6 @@ def entropy(counts):
     Arguments:
         counts: numpy array of counts for all byte values.
     """
-    ent = 0.0
     counts = np.trim_zeros(np.sort(counts))
     sz = sum(counts)
     p = counts/sz
