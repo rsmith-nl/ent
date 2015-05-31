@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-05-31 13:12:50 +0200
+# Last modified: 2015-05-31 13:26:19 +0200
 #
 # To the extent possible under law, Roland Smith has waived all
 # copyright and related or neighboring rights to the original works in
@@ -21,7 +21,7 @@ import math
 import sys
 import numpy as np
 
-__version__ = '0.3.0'
+__version__ = '0.4.0'
 
 
 def main(argv):
@@ -35,7 +35,7 @@ def main(argv):
     opts.add_argument('-c', action='store_true',
                       help="print occurrence counts (not implemented yet)")
     opts.add_argument('-t', action='store_true',
-                      help="terse output in CSV format (not implemented yet)")
+                      help="terse output in CSV format")
     opts.add_argument('-v', '--version', action='version',
                       version=__version__)
     opts.add_argument("files", metavar='file', nargs='*',
@@ -49,9 +49,22 @@ def main(argv):
         d = math.fabs(p*100-50)
         try:
             scc = correlation(data)
+            es = "{:.6f}".format(scc)
         except ValueError:
-            scc = 'undefined'
-        textout(fname, data, e, c, p, d, scc)
+            es = 'undefined'
+        if args.t:
+            terseout(fname, data, e, c, p, d, es)
+        else:
+            textout(fname, data, e, c, p, d, es)
+
+
+def terseout(name, data, e, chi2, p, d, scc):
+    """
+    Print the results in terse CSV.
+    """
+    print('0,File-name,File-bytes,Entropy,Chi-square,Mean,Serial-Correlation')
+    outs = '1,{},{},{:.6f},{:.2f},{:.4f},{}'
+    print(outs.format(name, len(data), e, chi2, data.mean(), scc))
 
 
 def textout(name, data, e, chi2, p, d, scc):
@@ -75,11 +88,8 @@ def textout(name, data, e, chi2, p, d, scc):
         print("is close to random, but not perfect.")
     else:
         print("looks random.")
-    if isinstance(scc, np.float64):
-        es = "{:.6f} (totally uncorrelated = 0.0)".format(scc)
-    else:
-        es = scc
-    print("- Serial correlation coefficient is", es)
+    print("- Serial correlation coefficient is", scc,
+          '(totally uncorrelated = 0.0).')
 
 
 def readdata(name):
