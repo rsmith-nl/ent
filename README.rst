@@ -4,7 +4,7 @@ ENT in Python
 :date: 2015-05-31
 :author: Roland Smith
 
-.. Last modified: 2015-05-31 15:38:44 +0200
+.. Last modified: 2015-05-31 15:55:42 +0200
 
 
 Introduction
@@ -52,8 +52,8 @@ The output format is different and more organized to handle multiple files.
     - Entropy is 7.999982 bits per byte.
     - Arithmetic mean value of data bytes is 127.5116 (random = 127.5).
     - χ² distribution for 10485760 samples is 259.03, and randomly
-    would exceed this value 43.53 percent of the times.
-    According to the χ² test, this sequence looks random.
+      would exceed this value 43.53 percent of the times.
+      According to the χ² test, this sequence looks random.
     - Serial correlation coefficient is -0.000289 (totally uncorrelated = 0.0).
 
 Next to normal text output, terse output is also implemented.

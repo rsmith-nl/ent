@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-# Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-05-31 13:28:27 +0200
+# file: ent.py
+# vim:fileencoding=utf-8:ft=python
 #
-# To the extent possible under law, Roland Smith has waived all
-# copyright and related or neighboring rights to the original works in
-# chisquare.py. This work is published from the Netherlands. See
-# http://creativecommons.org/publicdomain/zero/1.0/
+# Author: R.F. Smith <rsmith@xs4all.nl>
+# Created: 2012-08-25 23:37:50 +0200
+# Last modified: 2015-05-31 20:52:51 +0200
+#
+# To the extent possible under law, R.F. Smith has waived all copyright and
+# related or neighboring rights to ent.py. This work is published
+# from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 
 """
 Partial implementation of the ‘ent’ program by John "Random" Walker in Python
@@ -22,7 +24,7 @@ import math
 import sys
 import numpy as np
 
-__version__ = '0.4.0'
+__version__ = '0.4.1'
 
 
 def main(argv):
@@ -45,7 +47,7 @@ def main(argv):
     for fname in args.files:
         data, cnts = readdata(fname)
         e = entropy(cnts)
-        c = pearsonchisquare(data, cnts)
+        c = pearsonchisquare(cnts)
         p = pochisq(c)
         d = math.fabs(p*100-50)
         try:
@@ -124,20 +126,19 @@ def entropy(counts):
     return ent*8
 
 
-def pearsonchisquare(d, counts):
+def pearsonchisquare(counts):
     """
     Calculate Pearson's χ² (chi square) test for an array of bytes. See
     [http://en.wikipedia.org/wiki/Pearson%27s_chi-squared_test
     #Discrete_uniform_distribution]
 
     Arguments:
-        d: Numpy array of byte values
         counts: Numpy array of counts.
 
     Returns:
         χ² value
     """
-    np = len(d)/256
+    np = sum(counts)/256
     return sum((counts - np)**2/np)
 
 
@@ -152,8 +153,8 @@ def correlation(d):
         Serial correlation coeffiecient.
     """
     totalc = len(d)
-    a = np.array(d, np.float32)
-    b = np.append(a[1:], a[0])
+    a = np.array(d, np.float64)
+    b = np.roll(a, -1)
     scct1 = np.sum(a*b)
     scct2 = np.sum(a)**2
     scct3 = np.sum(a*a)
