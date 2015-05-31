@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # Author: R.F. Smith <rsmith@xs4all.nl>
-# Last modified: 2015-05-31 13:26:19 +0200
+# Last modified: 2015-05-31 13:28:27 +0200
 #
 # To the extent possible under law, Roland Smith has waived all
 # copyright and related or neighboring rights to the original works in
@@ -15,6 +15,7 @@ using the numerical Python extension.
 See http://www.fourmilab.ch/random/ for the original.
 """
 
+from __future__ import division, print_function
 from os.path import getsize
 import argparse
 import math

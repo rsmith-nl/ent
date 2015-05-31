@@ -4,13 +4,13 @@ ENT in Python
 :date: 2015-05-31
 :author: Roland Smith
 
-.. Last modified: 2015-05-31 12:41:22 +0200
+.. Last modified: 2015-05-31 13:30:52 +0200
 
 
 Introduction
 ============
 
-This is a partial Python_ 3 port of the ent_ program by John "Random" Walker.
+This is a partial Python_ port of the ent_ program by John "Random" Walker.
 
 .. _Python: http://www.python.org
 .. _ent: http://www.fourmilab.ch/random/
@@ -21,6 +21,9 @@ handling the data. The fact that operators on numpy arrays act by element
 makes the algorithms simpler.
 
 .. _numpy: http://www.numpy.org/
+
+Development is done on Python 3, but this program has been tested to work on
+both Python 2.7 and Python 3.4.
 
 
 Status
