@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2012-08-25 23:37:50 +0200
-# Last modified: 2015-05-31 20:52:51 +0200
+# Last modified: 2015-06-04 21:20:47 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to ent.py. This work is published
@@ -24,7 +24,7 @@ import math
 import sys
 import numpy as np
 
-__version__ = '0.4.1'
+__version__ = '0.5.0'
 
 
 def main(argv):
@@ -177,12 +177,17 @@ def poz(z):
     Returns:
         Cumulative probability from -∞ to z.
     """
-    cnt = 40  # number of expansion elements to use.
+    if z > 3:
+        return 1
+    elif z < -3:
+        return 0
+    cnt = 10  # number of expansion elements to use.
     exp = np.array([2*i+1 for i in range(0, cnt+1)])
     za = np.ones(cnt+1)*z
     num = np.power(za, exp)
     denum = np.cumprod(exp)
-    return 0.5+(np.sum(num/denum)/math.sqrt(2*math.pi))*math.exp(-(z*z)/2)
+    fact = math.exp(-z*z/2)/math.sqrt(2*math.pi)
+    return 0.5+fact*np.sum(num/denum)
 
 
 def pochisq(x, df=255):
@@ -218,11 +223,11 @@ def pochisq(x, df=255):
     I_SQRT_PI = 0.5641895835477562869480795  # 1/√π
     BIGX = 20.0
     a = 0.5 * x
-    ev = 2 * (df / 2) == df
+    ev = df % 2 == 0
     # Helper functions.
 
-    def even(t, f, w=ev):
-        if w:
+    def even(t, f):
+        if ev:
             return t
         return f
 
@@ -230,10 +235,9 @@ def pochisq(x, df=255):
         if x < -BIGX:
             return 0.0
         return math.exp(x)
-
     if df > 1:
         y = ex(-a)
-    s = even(y, 2.0 * poz(-math.sqrt(x)))
+    s = even(y, 2.0*poz(-math.sqrt(x)))
     if df > 2:
         x = 0.5 * (df - 1.0)
         z = even(1.0, 0.5)
@@ -241,7 +245,7 @@ def pochisq(x, df=255):
             e = even(0, LOG_SQRT_PI)
             c = math.log(a)
             while z <= x:
-                e += math.log(z)
+                e = math.log(z) + e
                 s += ex(c * z - a - e)
                 z += 1.0
             return s
@@ -249,8 +253,8 @@ def pochisq(x, df=255):
             e = even(1.0, I_SQRT_PI / math.sqrt(a))
             c = 0.0
             while z <= x:
-                e *= (a / z)
-                c += e
+                e = e * a / z
+                c = c + e
                 z += 1.0
             return c * y + s
     else:
