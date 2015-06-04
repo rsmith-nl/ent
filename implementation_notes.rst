@@ -4,7 +4,7 @@ Implementation notes for ent
 :date: 2015-05-31
 :author: Roland Smith
 
-.. Last modified: 2015-05-31 22:21:14 +0200
+.. Last modified: 2015-06-01 19:54:17 +0200
 
 Reading the data
 ================
@@ -179,17 +179,9 @@ Calculating the serial correlation coefficient
 ==============================================
 
 The code for this calculation was written after tracing the execution of the
-calculation in the original C code from the file ``randtest.c``. The
-calculation in that file uses the following variables;
-
-* ``sccfirst``
-* ``scc``
-* ``sccun``
-* ``sccu0``
-* ``scclast``
-* ``scct1``
-* ``scct2``
-* ``scct3``
+calculation in the original C code from the file ``randtest.c``.  The
+calculation in that file uses the following variables ``sccfirst``, ``scc``,
+``sccun``, ``sccu0``, ``scclast``, ``scct1``, ``scct2`` and ``scct3``.
 
 The variable ``sccfirst`` is only used to detect the first iteration, so we
 will not follow it. But for the other variables we will trace the values of
