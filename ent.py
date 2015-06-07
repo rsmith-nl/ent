@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2012-08-25 23:37:50 +0200
-# Last modified: 2015-06-04 21:20:47 +0200
+# Last modified: 2015-06-07 12:17:06 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to ent.py. This work is published
@@ -24,7 +24,7 @@ import math
 import sys
 import numpy as np
 
-__version__ = '0.5.0'
+__version__ = '0.5.1'
 
 
 def main(argv):
@@ -223,34 +223,23 @@ def pochisq(x, df=255):
     I_SQRT_PI = 0.5641895835477562869480795  # 1/√π
     BIGX = 20.0
     a = 0.5 * x
-    ev = df % 2 == 0
-    # Helper functions.
-
-    def even(t, f):
-        if ev:
-            return t
-        return f
-
-    def ex(x):
-        if x < -BIGX:
-            return 0.0
-        return math.exp(x)
+    even = df % 2 == 0
     if df > 1:
-        y = ex(-a)
-    s = even(y, 2.0*poz(-math.sqrt(x)))
+        y = math.exp(-a)
+    s = y if even else 2.0*poz(-math.sqrt(x))
     if df > 2:
         x = 0.5 * (df - 1.0)
-        z = even(1.0, 0.5)
+        z = 1.0 if even else 0.5
         if a > BIGX:
-            e = even(0, LOG_SQRT_PI)
+            e = 0 if even else LOG_SQRT_PI
             c = math.log(a)
             while z <= x:
                 e = math.log(z) + e
-                s += ex(c * z - a - e)
+                s += math.exp(c * z - a - e)
                 z += 1.0
             return s
         else:
-            e = even(1.0, I_SQRT_PI / math.sqrt(a))
+            e = 1.0 if even else I_SQRT_PI / math.sqrt(a)
             c = 0.0
             while z <= x:
                 e = e * a / z
