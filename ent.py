@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2012-08-25 23:37:50 +0200
-# Last modified: 2015-06-07 12:12:30 +0200
+# Last modified: 2015-06-07 12:17:06 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to ent.py. This work is published
@@ -24,7 +24,7 @@ import math
 import sys
 import numpy as np
 
-__version__ = '0.5.0'
+__version__ = '0.5.1'
 
 
 def main(argv):
