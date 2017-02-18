@@ -1,10 +1,10 @@
 ENT in Python
 #############
 
-:date: 2015-05-31
+:date: 2017-02-18
 :author: Roland Smith
 
-.. Last modified: 2015-05-31 15:55:42 +0200
+.. Last modified: 2017-02-18 19:39:43 +0100
 
 
 Introduction
@@ -24,8 +24,8 @@ makes the algorithms simpler and more elegant.
 
 .. _numpy: http://www.numpy.org/
 
-Development is done on Python 3, but this program has been tested to work on
-both Python 2.7 and Python 3.4.
+Development is done on Python 3. I will *try* not to loose compatibility with
+Python 2, but since I rarely work with Python 2 anymore I cannot promise that.
 
 
 Status
