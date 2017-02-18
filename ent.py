@@ -4,7 +4,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2012-08-25 23:37:50 +0200
-# Last modified: 2017-02-18 19:35:02 +0100
+# Last modified: 2017-02-18 23:23:49 +0100
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to ent.py. This work is published
@@ -23,7 +23,8 @@ import math
 import sys
 import numpy as np
 
-__version__ = '0.5.2'
+__version__ = '0.6.0'
+PI = 3.14159265358979323846
 
 
 def main(argv):
@@ -49,37 +50,39 @@ def main(argv):
         c = pearsonchisquare(cnts)
         p = pochisq(c)
         d = math.fabs(p*100-50)
+        m = monte_carlo(data)
         try:
             scc = correlation(data)
             es = "{:.6f}".format(scc)
         except ValueError:
             es = 'undefined'
         if args.t:
-            terseout(fname, data, e, c, p, d, es)
+            terseout(data, e, c, p, d, es, m)
         else:
-            textout(fname, data, e, c, p, d, es)
+            textout(data, e, c, p, d, es, m)
 
 
-def terseout(name, data, e, chi2, p, d, scc):
+def terseout(data, e, chi2, p, d, scc, mc):
     """
     Print the results in terse CSV.
     """
-    print('0,File-name,File-bytes,Entropy,Chi-square,Mean,Serial-Correlation')
-    outs = '1,{},{},{:.6f},{:.2f},{:.4f},{}'
-    print(outs.format(name, len(data), e, chi2, data.mean(), scc))
+    print('0,File-bytes,Entropy,Chi-square,Mean,'
+          'Monte-Carlo-Pi,Serial-Correlation')
+    outs = '1,{},{:.6f},{:.6f},{:.6f},{:.6f},{}'
+    print(outs.format(len(data), e, chi2, data.mean(), mc, scc))
 
 
-def textout(name, data, e, chi2, p, d, scc):
+def textout(data, e, chi2, p, d, scc, mc):
     """
     Print the results in plain text.
     """
-    print('File "{}"'.format(name))
     print('- Entropy is {:.6f} bits per byte.'.format(e))
-    outs = '- Arithmetic mean value of data bytes is {:.4f}'
-    print(outs.format(data.mean()), '(random = 127.5).')
+    print('- Optimum compression would reduce the size')
+    red = (100 * (8 - e)) / 8
+    print('  of this {} byte file by {:.0f}%.'.format(len(data), red))
     outs = '- χ² distribution for {} samples is {:.2f}, and randomly'
     print(outs.format(len(data), chi2))
-    outs = '  would exceed this value {:.2f} percent of the times.'
+    outs = '  would exceed this value {:.2f}% of the times.'
     print(outs.format(p*100))
     print("  According to the χ² test, this sequence", end=' ')
     if d > 49:
@@ -90,6 +93,10 @@ def textout(name, data, e, chi2, p, d, scc):
         print("is close to random, but not perfect.")
     else:
         print("looks random.")
+    outs = '- Arithmetic mean value of data bytes is {:.4f}'
+    print(outs.format(data.mean()), '(random = 127.5).')
+    outs = '- Monte Carlo value for π is {:.9f} (error {:.2f}%).'
+    print(outs.format(mc, 100*(math.fabs(PI - mc)/PI)))
     print("- Serial correlation coefficient is", scc,
           '(totally uncorrelated = 0.0).')
 
@@ -247,6 +254,30 @@ def pochisq(x, df=255):
             return c * y + s
     else:
         return s
+
+
+def monte_carlo(d):
+    """
+    Calculate Monte Carlo value for π.
+
+    Arguments:
+        d: numpy array of unsigned byte values.
+
+    Returns:
+        Approximation of π
+    """
+    MONTEN = 6
+    incirc = (256.0**(MONTEN//2) - 1)**2
+    d = np.array(d, copy=True, dtype=np.float64)
+    d = d[:len(d)//MONTEN * MONTEN]
+    values = np.sum(d.reshape((-1, MONTEN//2))*np.array([256**2, 256, 1]),
+                    axis=1)
+    montex = values[0::2]
+    montey = values[1::2]
+    dist2 = montex * montex + montey * montey
+    inmont = np.count_nonzero(dist2 <= incirc)
+    montepi = 4 * inmont/len(montex)
+    return montepi
 
 
 if __name__ == '__main__':

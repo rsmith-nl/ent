@@ -4,7 +4,7 @@ ENT in Python
 :date: 2017-02-18
 :author: Roland Smith
 
-.. Last modified: 2017-02-18 19:39:43 +0100
+.. Last modified: 2017-02-18 23:21:40 +0100
 
 
 Introduction
@@ -34,35 +34,33 @@ Status
 Implemented are the calculation of:
 
 * entropy.
+* optimum compression,
 * arithmetic mean,
-* χ² distribution and
+* χ² distribution,
+* Monte Carlo value for π and
 * serial correlation coefficient.
 
-Not implemented are the calculation of;
-
-* Monte Carlo value for π and
-* optimum compression.
-
-The output format is different and more organized to handle multiple files.
+The output format is slightly different.
 
 .. code-block:: console
 
     > python ent.py test/random.dat
-    File "test/random.dat"
     - Entropy is 7.999982 bits per byte.
-    - Arithmetic mean value of data bytes is 127.5116 (random = 127.5).
     - χ² distribution for 10485760 samples is 259.03, and randomly
-      would exceed this value 43.53 percent of the times.
+      would exceed this value 41.80 percent of the times.
       According to the χ² test, this sequence looks random.
-    - Serial correlation coefficient is -0.000289 (totally uncorrelated = 0.0).
+    - Arithmetic mean value of data bytes is 127.5116 (random = 127.5).
+    - Monte Carlo value for π is 3.139877754 (error 0.05 %).
+    - Serial correlation coefficient is -0.000296 (totally uncorrelated = 0.0).
+
 
 Next to normal text output, terse output is also implemented.
 
 .. code-block:: console
 
     > python ent.py -t test/random.dat
-    0,File-name,File-bytes,Entropy,Chi-square,Mean,Serial-Correlation
-    1,test/random.dat,10485760,7.999982,259.03,127.5116,-0.000289
+    0,File-bytes,Entropy,Chi-square,Mean,Monte-Carlo-Pi,Serial-Correlation
+    1,10485760,7.999982,259.031104,127.511638,3.139878,-0.000296
 
 The following are not implemented;
 
