@@ -4,7 +4,7 @@ Implementation notes for ent
 :date: 2015-05-31
 :author: Roland Smith
 
-.. Last modified: 2015-06-01 19:54:17 +0200
+.. Last modified: 2017-02-22 19:56:45 +0100
 
 Reading the data
 ================
@@ -340,4 +340,92 @@ The calculation for a given value ``z`` goes like this;
 Looking in the relevant table_, this is the correct answer.
 
 .. _table: http://en.wikipedia.org/wiki/Standard_normal_table#Cumulative
+
+
+Calculating the Monte Carlo value for π
+=======================================
+
+This calculation creates an x and y coordinate out of three consecutive bytes
+each. Suppose that ``d`` is an array of bytes, then the coordinates of the
+first point would be calculated as follows by considering the bytes as
+unsigned 8-bit integers.
+
+.. code-block:: python
+
+    montex = d[0]*256**2 + d[1]*256 + d[2]
+    montey = d[3]*256**2 + d[4]*256 + d[5]
+    dist2 = montex*montex + montey*montey
+
+The square of the radius of the circle is given by:
+
+.. code-block:: python
+
+    incirc = (256**3 - 1)**2
+
+If ``dist2`` is smaller than ``incirc``, the point is counted as being inside
+the circle.
+
+.. code-block:: python
+
+    In [1]: import os
+
+    In [2]: import numpy as np
+
+    In [3]: d = np.array(bytearray(os.urandom(24)), dtype=np.float64)
+
+    In [4]: d
+    Out[4]:
+    array([  69.,  155.,  104.,    4.,  149.,  189.,  204.,  154.,  133.,
+            153.,  177.,  158.,  198.,   81.,  110.,  203.,   96.,  203.,
+            244.,  191.,  115.,   94.,   30.,  207.])
+
+Combining three bytes into one number is done like this.
+
+.. code-block:: python
+
+
+    In [5]: values = np.sum(d.reshape((-1, 3))*np.array([256**2, 256, 1]), axis=1)
+
+    In [6]: values
+    Out[6]:
+    array([  4561768.,    300477.,  13408901.,  10072478.,  12996974.,
+            13328587.,  16039795.,   6168271.])
+
+Slicing the X and Y values and calculating the square of distance from the origin.
+
+.. code-block:: python
+
+    In [7]: montex = values[0::2]
+
+    In [8]: montey = values[1::2]
+
+    In [9]: dist2 = montex * montex + montey * montey
+
+    In [10]: dist2
+    Out[10]:
+    array([  2.09000137e+13,   2.81253439e+14,   3.46572565e+14,
+            2.95322591e+14])
+
+Calculate the square of the maximum distance where a point is still in the
+circle, and count the number of points that match.
+
+.. code-block:: python
+
+    In [11]: incirc = (256.0**3 - 1)**2
+
+    In [12]: incirc
+    Out[12]: 281474943156225.0
+
+    In [13]: inmont = np.count_nonzero(dist2 <= incirc)
+
+    In [14]: inmont
+    Out[14]: 2
+
+This is only a small example with very few points. But for a large amount of
+points one would calculate π as follows:
+
+.. code-block:: python
+
+    montepi = 4 * inmont/len(montex)
+
 
