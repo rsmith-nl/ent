@@ -9,7 +9,6 @@
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to ent.py. This work is published
 # from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
-
 """
 Partial implementation of the ‘ent’ program by John "Random" Walker in Python
 using the numerical Python extension.
@@ -35,21 +34,25 @@ def main(argv):
         argv: Program options.
     """
     opts = argparse.ArgumentParser(prog='ent', description=__doc__)
-    opts.add_argument('-c', action='store_true',
-                      help="print occurrence counts (not implemented yet)")
-    opts.add_argument('-t', action='store_true',
-                      help="terse output in CSV format")
-    opts.add_argument('-v', '--version', action='version',
-                      version=__version__)
-    opts.add_argument("files", metavar='file', nargs='*',
-                      help="one or more files to process")
+    opts.add_argument(
+        '-c',
+        action='store_true',
+        help="print occurrence counts (not implemented yet)")
+    opts.add_argument(
+        '-t', action='store_true', help="terse output in CSV format")
+    opts.add_argument('-v', '--version', action='version', version=__version__)
+    opts.add_argument(
+        "files",
+        metavar='file',
+        nargs='*',
+        help="one or more files to process")
     args = opts.parse_args(argv)
     for fname in args.files:
         data, cnts = readdata(fname)
         e = entropy(cnts)
         c = pearsonchisquare(cnts)
         p = pochisq(c)
-        d = math.fabs(p*100-50)
+        d = math.fabs(p * 100 - 50)
         m = monte_carlo(data)
         try:
             scc = correlation(data)
@@ -83,7 +86,7 @@ def textout(data, e, chi2, p, d, scc, mc):
     outs = '- χ² distribution for {} samples is {:.2f}, and randomly'
     print(outs.format(len(data), chi2))
     outs = '  would exceed this value {:.2f}% of the times.'
-    print(outs.format(p*100))
+    print(outs.format(p * 100))
     print("  According to the χ² test, this sequence", end=' ')
     if d > 49:
         print("is almost certainly not random")
@@ -96,7 +99,7 @@ def textout(data, e, chi2, p, d, scc, mc):
     outs = '- Arithmetic mean value of data bytes is {:.4f}'
     print(outs.format(data.mean()), '(random = 127.5).')
     outs = '- Monte Carlo value for π is {:.9f} (error {:.2f}%).'
-    print(outs.format(mc, 100*(math.fabs(PI - mc)/PI)))
+    print(outs.format(mc, 100 * (math.fabs(PI - mc) / PI)))
     print("- Serial correlation coefficient is", scc,
           '(totally uncorrelated = 0.0).')
 
@@ -127,9 +130,9 @@ def entropy(counts):
     """
     counts = np.trim_zeros(np.sort(counts))
     sz = sum(counts)
-    p = counts/sz
-    ent = -sum(p * np.log(p)/math.log(256))
-    return ent*8
+    p = counts / sz
+    ent = -sum(p * np.log(p) / math.log(256))
+    return ent * 8
 
 
 def pearsonchisquare(counts):
@@ -144,8 +147,8 @@ def pearsonchisquare(counts):
     Returns:
         χ² value
     """
-    np = sum(counts)/256
-    return sum((counts - np)**2/np)
+    np = sum(counts) / 256
+    return sum((counts - np)**2 / np)
 
 
 def correlation(d):
@@ -161,9 +164,9 @@ def correlation(d):
     totalc = len(d)
     a = np.array(d, np.float64)
     b = np.roll(a, -1)
-    scct1 = np.sum(a*b)
+    scct1 = np.sum(a * b)
     scct2 = np.sum(a)**2
-    scct3 = np.sum(a*a)
+    scct3 = np.sum(a * a)
     scc = totalc * scct3 - scct2
     if scc == 0:
         raise ValueError
@@ -188,12 +191,12 @@ def poz(z):
     elif z < -3:
         return 0
     cnt = 10  # number of expansion elements to use.
-    exp = np.array([2*i+1 for i in range(0, cnt+1)])
-    za = np.ones(cnt+1)*z
+    exp = np.array([2 * i + 1 for i in range(0, cnt + 1)])
+    za = np.ones(cnt + 1) * z
     num = np.power(za, exp)
     denum = np.cumprod(exp)
-    fact = math.exp(-z*z/2)/math.sqrt(2*math.pi)
-    return 0.5+fact*np.sum(num/denum)
+    fact = math.exp(-z * z / 2) / math.sqrt(2 * math.pi)
+    return 0.5 + fact * np.sum(num / denum)
 
 
 def pochisq(x, df=255):
@@ -232,7 +235,7 @@ def pochisq(x, df=255):
     even = df % 2 == 0
     if df > 1:
         y = math.exp(-a)
-    s = y if even else 2.0*poz(-math.sqrt(x))
+    s = y if even else 2.0 * poz(-math.sqrt(x))
     if df > 2:
         x = 0.5 * (df - 1.0)
         z = 1.0 if even else 0.5
@@ -267,16 +270,16 @@ def monte_carlo(d):
         Approximation of π
     """
     MONTEN = 6
-    incirc = (256.0**(MONTEN//2) - 1)**2
+    incirc = (256.0**(MONTEN // 2) - 1)**2
     d = np.array(d, copy=True, dtype=np.float64)
-    d = d[:len(d)//MONTEN * MONTEN]
-    values = np.sum(d.reshape((-1, MONTEN//2))*np.array([256**2, 256, 1]),
-                    axis=1)
+    d = d[:len(d) // MONTEN * MONTEN]
+    values = np.sum(
+        d.reshape((-1, MONTEN // 2)) * np.array([256**2, 256, 1]), axis=1)
     montex = values[0::2]
     montey = values[1::2]
     dist2 = montex * montex + montey * montey
     inmont = np.count_nonzero(dist2 <= incirc)
-    montepi = 4 * inmont/len(montex)
+    montepi = 4 * inmont / len(montex)
     return montepi
 
 
