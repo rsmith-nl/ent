@@ -4,14 +4,13 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2012-08-25 23:37:50 +0200
-# Last modified: 2017-02-18 23:23:49 +0100
+# Last modified: 2017-06-04 15:37:49 +0200
 #
 # To the extent possible under law, R.F. Smith has waived all copyright and
 # related or neighboring rights to ent.py. This work is published
 # from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
 """
-Partial implementation of the ‘ent’ program by John "Random" Walker in Python
-using the numerical Python extension.
+Partial implementation of the ‘ent’ program by John "Random" Walker in Python.
 
 See http://www.fourmilab.ch/random/ for the original.
 """
@@ -28,7 +27,7 @@ PI = 3.14159265358979323846
 
 def main(argv):
     """
-    Calculates and prints figures about the randomness of the input files.
+    Calculate and print figures about the randomness of the input files.
 
     Arguments:
         argv: Program options.
@@ -68,6 +67,15 @@ def main(argv):
 def terseout(data, e, chi2, p, d, scc, mc):
     """
     Print the results in terse CSV.
+
+    Arguments:
+        data: file contents
+        e: Entropy of the data in bits per byte.
+        chi2: Χ² value for the data.
+        p: Probability of normal z value.
+        d: Percent distance of p from centre.
+        scc: Serial correlation coefficient.
+        mc: Monte Carlo approximation of π.
     """
     print('0,File-bytes,Entropy,Chi-square,Mean,'
           'Monte-Carlo-Pi,Serial-Correlation')
@@ -78,6 +86,15 @@ def terseout(data, e, chi2, p, d, scc, mc):
 def textout(data, e, chi2, p, d, scc, mc):
     """
     Print the results in plain text.
+
+    Arguments:
+        data: file contents
+        e: Entropy of the data in bits per byte.
+        chi2: Χ² value for the data.
+        p: Probability of normal z value.
+        d: Percent distance of p from centre.
+        scc: Serial correlation coefficient.
+        mc: Monte Carlo approximation of π.
     """
     print('- Entropy is {:.6f} bits per byte.'.format(e))
     print('- Optimum compression would reduce the size')
@@ -105,8 +122,8 @@ def textout(data, e, chi2, p, d, scc, mc):
 
 
 def readdata(name):
-    """Read the data from a file and count how often each byte value
-    occurs.
+    """
+    Read the data from a file and count byte occurences.
 
     Arguments:
         name: Path of the file to read
@@ -122,11 +139,13 @@ def readdata(name):
 
 def entropy(counts):
     """
-    Calculate the entropy of the data represented by the counts array. Returns
-    the entropy in bits per byte.
+    Calculate the entropy of the data represented by the counts array.
 
     Arguments:
         counts: numpy array of counts for all byte values.
+
+    Returns:
+        Entropy in bits per byte.
     """
     counts = np.trim_zeros(np.sort(counts))
     sz = sum(counts)
@@ -137,8 +156,9 @@ def entropy(counts):
 
 def pearsonchisquare(counts):
     """
-    Calculate Pearson's χ² (chi square) test for an array of bytes. See
-    [http://en.wikipedia.org/wiki/Pearson%27s_chi-squared_test
+    Calculate Pearson's χ² (chi square) test for an array of bytes.
+
+    See [http://en.wikipedia.org/wiki/Pearson%27s_chi-squared_test
     #Discrete_uniform_distribution]
 
     Arguments:
@@ -176,7 +196,8 @@ def correlation(d):
 
 def poz(z):
     """
-    Probability of normal z value.
+    Calculate probability of normal z value.
+
     Adapted from http://en.wikipedia.org/wiki/Normal_distribution,
     integration by parts of cumulative distribution function.
 
@@ -201,9 +222,11 @@ def poz(z):
 
 def pochisq(x, df=255):
     """
-    Compute probability of χ² test value. Adapted from: Hill, I. D. and Pike,
-    M. C.  Algorithm 299 Collected Algorithms for the CACM 1967 p. 243 Updated
-    for rounding errors based on remark in ACM TOMS June 1985, page 185.
+    Compute probability of χ² test value.
+
+    Adapted from: Hill, I. D. and Pike, M. C.  Algorithm 299 Collected
+    Algorithms for the CACM 1967 p. 243 Updated for rounding errors based on
+    remark in ACM TOMS June 1985, page 185.
 
     According to http://www.fourmilab.ch/random/:
 
