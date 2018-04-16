@@ -1,14 +1,11 @@
 #!/usr/bin/env python3
-# vim:fileencoding=utf-8:ft=python
 # file: ent.py
+# vim:fileencoding=utf-8:fdm=marker:ft=python
 #
-# Author: R.F. Smith <rsmith@xs4all.nl>
-# Created: 2012-08-25 23:37:50 +0200
-# Last modified: 2017-11-11 19:58:42 +0100
-#
-# To the extent possible under law, R.F. Smith has waived all copyright and
-# related or neighboring rights to ent.py. This work is published
-# from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
+# Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
+# SPDX-License-Identifier: MIT
+# Created: 2012-08-25T23:37:50+0200
+# Last modified: 2018-04-17T00:22:59+0200
 """
 Partial implementation of the ‘ent’ program by John "Random" Walker in Python.
 
