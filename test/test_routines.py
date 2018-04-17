@@ -3,12 +3,7 @@
 #
 # Author: R.F. Smith <rsmith@xs4all.nl>
 # Created: 2017-02-26 23:08:58 +0100
-# Last modified: 2017-02-26 23:34:54 +0100
-#
-# To the extent possible under law, R.F. Smith has waived all copyright and
-# related or neighboring rights to test_routines.py. This work is published
-# from the Netherlands. See http://creativecommons.org/publicdomain/zero/1.0/
-
+# Last modified: 2018-04-17T22:09:45+0200
 """Test routines from ent.py by comparing the results from a known batch of
 random data to the results given by John Walker's ent.
 
