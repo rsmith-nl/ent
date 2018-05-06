@@ -31,17 +31,11 @@ def main(argv):
     """
     opts = argparse.ArgumentParser(prog='ent', description=__doc__)
     opts.add_argument(
-        '-c',
-        action='store_true',
-        help="print occurrence counts (not implemented yet)")
-    opts.add_argument(
-        '-t', action='store_true', help="terse output in CSV format")
+        '-c', action='store_true', help="print occurrence counts (not implemented yet)"
+    )
+    opts.add_argument('-t', action='store_true', help="terse output in CSV format")
     opts.add_argument('-v', '--version', action='version', version=__version__)
-    opts.add_argument(
-        "files",
-        metavar='file',
-        nargs='*',
-        help="one or more files to process")
+    opts.add_argument("files", metavar='file', nargs='*', help="one or more files to process")
     args = opts.parse_args(argv)
     for fname in args.files:
         data, cnts = readdata(fname)
@@ -74,8 +68,7 @@ def terseout(data, e, chi2, p, d, scc, mc):
         scc: Serial correlation coefficient.
         mc: Monte Carlo approximation of π.
     """
-    print('0,File-bytes,Entropy,Chi-square,Mean,'
-          'Monte-Carlo-Pi,Serial-Correlation')
+    print('0,File-bytes,Entropy,Chi-square,Mean,' 'Monte-Carlo-Pi,Serial-Correlation')
     outs = '1,{},{:.6f},{:.6f},{:.6f},{:.6f},{}'
     print(outs.format(len(data), e, chi2, data.mean(), mc, scc))
 
@@ -114,8 +107,7 @@ def textout(data, e, chi2, p, d, scc, mc):
     print(outs.format(data.mean()), '(random = 127.5).')
     outs = '- Monte Carlo value for π is {:.9f} (error {:.2f}%).'
     print(outs.format(mc, 100 * (math.fabs(PI - mc) / PI)))
-    print("- Serial correlation coefficient is", scc,
-          '(totally uncorrelated = 0.0).')
+    print("- Serial correlation coefficient is", scc, '(totally uncorrelated = 0.0).')
 
 
 def readdata(name):
@@ -293,8 +285,7 @@ def monte_carlo(d):
     incirc = (256.0**(MONTEN // 2) - 1)**2
     d = np.array(d, copy=True, dtype=np.float64)
     d = d[:len(d) // MONTEN * MONTEN]
-    values = np.sum(
-        d.reshape((-1, MONTEN // 2)) * np.array([256**2, 256, 1]), axis=1)
+    values = np.sum(d.reshape((-1, MONTEN // 2)) * np.array([256**2, 256, 1]), axis=1)
     montex = values[0::2]
     montey = values[1::2]
     dist2 = montex * montex + montey * montey
