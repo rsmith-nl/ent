@@ -4,7 +4,7 @@ ENT in Python
 :date: 2017-02-18
 :author: Roland Smith
 
-.. Last modified: 2017-02-18 23:21:40 +0100
+.. Last modified: 2018-07-08T13:40:54+0200
 
 
 Introduction
@@ -24,8 +24,7 @@ makes the algorithms simpler and more elegant.
 
 .. _numpy: http://www.numpy.org/
 
-Development is done on Python 3. I will *try* not to loose compatibility with
-Python 2, but since I rarely work with Python 2 anymore I cannot promise that.
+Development is done on Python 3.6+.
 
 
 Status
@@ -44,7 +43,7 @@ The output format is slightly different.
 
 .. code-block:: console
 
-    > python ent.py test/random.dat
+    > python3 ent.py test/random.dat
     - Entropy is 7.999982 bits per byte.
     - χ² distribution for 10485760 samples is 259.03, and randomly
       would exceed this value 41.80 percent of the times.
@@ -58,7 +57,7 @@ Next to normal text output, terse output is also implemented.
 
 .. code-block:: console
 
-    > python ent.py -t test/random.dat
+    > python3 ent.py -t test/random.dat
     0,File-bytes,Entropy,Chi-square,Mean,Monte-Carlo-Pi,Serial-Correlation
     1,10485760,7.999982,259.031104,127.511638,3.139878,-0.000296
 

@@ -5,7 +5,7 @@
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-08-25T23:37:50+0200
-# Last modified: 2018-04-17T00:22:59+0200
+# Last modified: 2018-07-08T13:37:52+0200
 """
 Partial implementation of the ‘ent’ program by John "Random" Walker in Python.
 
@@ -46,7 +46,7 @@ def main(argv):
         m = monte_carlo(data)
         try:
             scc = correlation(data)
-            es = "{:.6f}".format(scc)
+            es = f"{scc:.6f}"
         except ValueError:
             es = 'undefined'
         if args.t:
@@ -69,8 +69,9 @@ def terseout(data, e, chi2, p, d, scc, mc):
         mc: Monte Carlo approximation of π.
     """
     print('0,File-bytes,Entropy,Chi-square,Mean,' 'Monte-Carlo-Pi,Serial-Correlation')
-    outs = '1,{},{:.6f},{:.6f},{:.6f},{:.6f},{}'
-    print(outs.format(len(data), e, chi2, data.mean(), mc, scc))
+    n = len(data)
+    m = data.mean()
+    print(f'1,{n},{e:.6f},{chi2:.6f},{m:.6f},{mc:.6f},{scc}')
 
 
 def textout(data, e, chi2, p, d, scc, mc):
@@ -86,14 +87,14 @@ def textout(data, e, chi2, p, d, scc, mc):
         scc: Serial correlation coefficient.
         mc: Monte Carlo approximation of π.
     """
-    print('- Entropy is {:.6f} bits per byte.'.format(e))
+    print(f'- Entropy is {e:.6f} bits per byte.')
     print('- Optimum compression would reduce the size')
     red = (100 * (8 - e)) / 8
-    print('  of this {} byte file by {:.0f}%.'.format(len(data), red))
-    outs = '- χ² distribution for {} samples is {:.2f}, and randomly'
-    print(outs.format(len(data), chi2))
-    outs = '  would exceed this value {:.2f}% of the times.'
-    print(outs.format(p * 100))
+    n = len(data)
+    print(f'  of this {n} byte file by {red:.0f}%.')
+    print(f'- χ² distribution for {n} samples is {chi2:.2f}, and randomly')
+    pp = 100 * p
+    print(f'  would exceed this value {pp:.2f}% of the times.')
     print("  According to the χ² test, this sequence", end=' ')
     if d > 49:
         print("is almost certainly not random")
@@ -103,11 +104,11 @@ def textout(data, e, chi2, p, d, scc, mc):
         print("is close to random, but not perfect.")
     else:
         print("looks random.")
-    outs = '- Arithmetic mean value of data bytes is {:.4f}'
-    print(outs.format(data.mean()), '(random = 127.5).')
-    outs = '- Monte Carlo value for π is {:.9f} (error {:.2f}%).'
-    print(outs.format(mc, 100 * (math.fabs(PI - mc) / PI)))
-    print("- Serial correlation coefficient is", scc, '(totally uncorrelated = 0.0).')
+    m = data.mean()
+    print(f'- Arithmetic mean value of data bytes is {m:.4f} (random = 127.5).')
+    err = 100 * (math.fabs(PI - mc) / PI)
+    print(f'- Monte Carlo value for π is {mc:.9f} (error {err:.2f}%).')
+    print(f'- Serial correlation coefficient is {scc} (totally uncorrelated = 0.0).')
 
 
 def readdata(name):
