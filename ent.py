@@ -18,7 +18,7 @@ import math
 import sys
 import numpy as np
 
-__version__ = '0.7'
+__version__ = "2018.07.08"
 PI = 3.14159265358979323846
 
 
