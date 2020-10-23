@@ -29,13 +29,15 @@ def main(argv):
     Arguments:
         argv: Program options.
     """
-    opts = argparse.ArgumentParser(prog='ent', description=__doc__)
+    opts = argparse.ArgumentParser(prog="ent", description=__doc__)
     opts.add_argument(
-        '-c', action='store_true', help="print occurrence counts (not implemented yet)"
+        "-c", action="store_true", help="print occurrence counts (not implemented yet)"
     )
-    opts.add_argument('-t', action='store_true', help="terse output in CSV format")
-    opts.add_argument('-v', '--version', action='version', version=__version__)
-    opts.add_argument("files", metavar='file', nargs='*', help="one or more files to process")
+    opts.add_argument("-t", action="store_true", help="terse output in CSV format")
+    opts.add_argument("-v", "--version", action="version", version=__version__)
+    opts.add_argument(
+        "files", metavar="file", nargs="*", help="one or more files to process"
+    )
     args = opts.parse_args(argv)
     for fname in args.files:
         data, cnts = readdata(fname)
@@ -48,7 +50,7 @@ def main(argv):
             scc = correlation(data)
             es = f"{scc:.6f}"
         except ValueError:
-            es = 'undefined'
+            es = "undefined"
         if args.t:
             terseout(data, e, c, p, d, es, m)
         else:
@@ -68,10 +70,10 @@ def terseout(data, e, chi2, p, d, scc, mc):
         scc: Serial correlation coefficient.
         mc: Monte Carlo approximation of π.
     """
-    print('0,File-bytes,Entropy,Chi-square,Mean,' 'Monte-Carlo-Pi,Serial-Correlation')
+    print("0,File-bytes,Entropy,Chi-square,Mean," "Monte-Carlo-Pi,Serial-Correlation")
     n = len(data)
     m = data.mean()
-    print(f'1,{n},{e:.6f},{chi2:.6f},{m:.6f},{mc:.6f},{scc}')
+    print(f"1,{n},{e:.6f},{chi2:.6f},{m:.6f},{mc:.6f},{scc}")
 
 
 def textout(data, e, chi2, p, d, scc, mc):
@@ -87,15 +89,15 @@ def textout(data, e, chi2, p, d, scc, mc):
         scc: Serial correlation coefficient.
         mc: Monte Carlo approximation of π.
     """
-    print(f'- Entropy is {e:.6f} bits per byte.')
-    print('- Optimum compression would reduce the size')
+    print(f"- Entropy is {e:.6f} bits per byte.")
+    print("- Optimum compression would reduce the size")
     red = (100 * (8 - e)) / 8
     n = len(data)
-    print(f'  of this {n} byte file by {red:.0f}%.')
-    print(f'- χ² distribution for {n} samples is {chi2:.2f}, and randomly')
+    print(f"  of this {n} byte file by {red:.0f}%.")
+    print(f"- χ² distribution for {n} samples is {chi2:.2f}, and randomly")
     pp = 100 * p
-    print(f'  would exceed this value {pp:.2f}% of the times.')
-    print("  According to the χ² test, this sequence", end=' ')
+    print(f"  would exceed this value {pp:.2f}% of the times.")
+    print("  According to the χ² test, this sequence", end=" ")
     if d > 49:
         print("is almost certainly not random")
     elif d > 45:
@@ -105,10 +107,10 @@ def textout(data, e, chi2, p, d, scc, mc):
     else:
         print("looks random.")
     m = data.mean()
-    print(f'- Arithmetic mean value of data bytes is {m:.4f} (random = 127.5).')
+    print(f"- Arithmetic mean value of data bytes is {m:.4f} (random = 127.5).")
     err = 100 * (math.fabs(PI - mc) / PI)
-    print(f'- Monte Carlo value for π is {mc:.9f} (error {err:.2f}%).')
-    print(f'- Serial correlation coefficient is {scc} (totally uncorrelated = 0.0).')
+    print(f"- Monte Carlo value for π is {mc:.9f} (error {err:.2f}%).")
+    print(f"- Serial correlation coefficient is {scc} (totally uncorrelated = 0.0).")
 
 
 def readdata(name):
@@ -158,7 +160,7 @@ def pearsonchisquare(counts):
         χ² value
     """
     np = sum(counts) / 256
-    return sum((counts - np)**2 / np)
+    return sum((counts - np) ** 2 / np)
 
 
 def correlation(d):
@@ -175,7 +177,7 @@ def correlation(d):
     a = np.array(d, np.float64)
     b = np.roll(a, -1)
     scct1 = np.sum(a * b)
-    scct2 = np.sum(a)**2
+    scct2 = np.sum(a) ** 2
     scct3 = np.sum(a * a)
     scc = totalc * scct3 - scct2
     if scc == 0:
@@ -237,7 +239,7 @@ def pochisq(x, df=255):
     """
     # Check arguments first
     if not isinstance(df, int):
-        raise ValueError('df must be an integer')
+        raise ValueError("df must be an integer")
     if x <= 0.0 or df < 1:
         return 1.0
     # Constants
@@ -283,10 +285,10 @@ def monte_carlo(d):
         Approximation of π
     """
     MONTEN = 6
-    incirc = (256.0**(MONTEN // 2) - 1)**2
+    incirc = (256.0 ** (MONTEN // 2) - 1) ** 2
     d = np.array(d, copy=True, dtype=np.float64)
-    d = d[:len(d) // MONTEN * MONTEN]
-    values = np.sum(d.reshape((-1, MONTEN // 2)) * np.array([256**2, 256, 1]), axis=1)
+    d = d[: len(d) // MONTEN * MONTEN]
+    values = np.sum(d.reshape((-1, MONTEN // 2)) * np.array([256 ** 2, 256, 1]), axis=1)
     montex = values[0::2]
     montey = values[1::2]
     dist2 = montex * montex + montey * montey
@@ -295,5 +297,5 @@ def monte_carlo(d):
     return montepi
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv[1:])
