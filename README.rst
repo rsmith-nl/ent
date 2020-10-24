@@ -4,7 +4,7 @@ ENT in Python
 :date: 2017-02-18
 :author: Roland Smith
 
-.. Last modified: 2018-07-08T13:40:54+0200
+.. Last modified: 2020-10-24T11:37:11+0200
 
 
 Introduction
@@ -24,7 +24,7 @@ makes the algorithms simpler and more elegant.
 
 .. _numpy: http://www.numpy.org/
 
-Development is done on Python 3.6+.
+Development is done on Python 3.9+.
 
 
 Status
@@ -69,3 +69,30 @@ The following are not implemented;
 
 While occurrence counts might be implemented, the remaining will
 likely not be implemented.
+
+
+Testing
+=======
+
+This program comes with a test suite, which requires py.test.
+To run the tests, use the command::
+
+    py.test -v test/
+
+Example output::
+
+    ========================================== test session starts ==========================================
+    platform freebsd12 -- Python 3.9.0, pytest-4.5.0, py-1.9.0, pluggy-0.13.1 -- /usr/local/bin/python3.9
+    cachedir: .pytest_cache
+    rootdir: /home/rsmith/src/progs/ent
+    plugins: pylama-7.7.1
+    collected 6 items
+
+    test/test_routines.py::test_size PASSED                                                           [ 16%]
+    test/test_routines.py::test_mean PASSED                                                           [ 33%]
+    test/test_routines.py::test_entropy PASSED                                                        [ 50%]
+    test/test_routines.py::test_chisquare PASSED                                                      [ 66%]
+    test/test_routines.py::test_correlation PASSED                                                    [ 83%]
+    test/test_routines.py::test_mc PASSED                                                             [100%]
+
+    ======================================= 6 passed in 0.29 seconds ========================================
