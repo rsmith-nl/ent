@@ -5,16 +5,16 @@
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-08-25T23:37:50+0200
-# Last modified: 2018-07-08T13:37:52+0200
+# Last modified: 2020-10-24T11:58:46+0200
 """
 Partial implementation of the ‘ent’ program by John "Random" Walker in Python.
 
 See http://www.fourmilab.ch/random/ for the original.
 """
 
-from __future__ import division, print_function
 import argparse
 import math
+import statistics as stat
 import sys
 import numpy as np
 
@@ -186,32 +186,6 @@ def correlation(d):
     return scc
 
 
-def poz(z):
-    """
-    Calculate probability of normal z value.
-
-    Adapted from http://en.wikipedia.org/wiki/Normal_distribution,
-    integration by parts of cumulative distribution function.
-
-    Arguments:
-        z: normal z value
-
-    Returns:
-        Cumulative probability from -∞ to z.
-    """
-    if z > 3:
-        return 1
-    elif z < -3:
-        return 0
-    cnt = 10  # number of expansion elements to use.
-    exp = np.array([2 * i + 1 for i in range(0, cnt + 1)])
-    za = np.ones(cnt + 1) * z
-    num = np.power(za, exp)
-    denum = np.cumprod(exp)
-    fact = math.exp(-z * z / 2) / math.sqrt(2 * math.pi)
-    return 0.5 + fact * np.sum(num / denum)
-
-
 def pochisq(x, df=255):
     """
     Compute probability of χ² test value.
@@ -250,7 +224,8 @@ def pochisq(x, df=255):
     even = df % 2 == 0
     if df > 1:
         y = math.exp(-a)
-    s = y if even else 2.0 * poz(-math.sqrt(x))
+    nd = stat.NormalDist()
+    s = y if even else 2.0 * nd.cdf(-math.sqrt(x))
     if df > 2:
         x = 0.5 * (df - 1.0)
         z = 1.0 if even else 0.5
