@@ -4,7 +4,7 @@ Implementation notes for ent
 :date: 2015-05-31
 :author: Roland Smith
 
-.. Last modified: 2017-02-22 19:56:45 +0100
+.. Last modified: 2020-10-24T12:04:34+0200
 
 Reading the data
 ================
@@ -340,6 +340,9 @@ The calculation for a given value ``z`` goes like this;
 Looking in the relevant table_, this is the correct answer.
 
 .. _table: http://en.wikipedia.org/wiki/Standard_normal_table#Cumulative
+
+After the Python 3.9 update, I used the ``cdf`` method from
+``statistics.NormalDist``.
 
 
 Calculating the Monte Carlo value for π
