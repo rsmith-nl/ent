@@ -17,7 +17,13 @@ import sys
 sys.path.insert(1, ".")
 
 
-from ent_without_numpy import readdata, entropy, pearsonchisquare, correlation, monte_carlo  # noqa
+from ent_without_numpy import (
+    readdata,
+    entropy,
+    pearsonchisquare,
+    correlation,
+    monte_carlo,
+)  # noqa
 
 goodtxt = """0,File-bytes,Entropy,Chi-square,Mean,Monte-Carlo-Pi,Serial-Correlation
 1,10485760,7.999982,259.031104,127.511638,3.139878,-0.000296"""

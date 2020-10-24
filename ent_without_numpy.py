@@ -5,7 +5,7 @@
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-08-25T23:37:50+0200
-# Last modified: 2020-10-24T11:30:35+0200
+# Last modified: 2020-10-24T12:01:47+0200
 """
 Partial implementation of the ‘ent’ program by John "Random" Walker in Python.
 
@@ -142,9 +142,9 @@ def entropy(counts):
         Entropy in bits per byte.
     """
     sz = sum(counts.values())
-    p = [n/sz for n in counts.values()]
+    p = [n / sz for n in counts.values()]
     c = math.log(256)
-    ent = -sum(n*math.log(n)/c for n in p)
+    ent = -sum(n * math.log(n) / c for n in p)
     return ent * 8
 
 
@@ -161,7 +161,7 @@ def pearsonchisquare(counts):
     Returns:
         χ² value
     """
-    np = sum(counts.values())/256
+    np = sum(counts.values()) / 256
     return sum((c - np) ** 2 / np for c in counts.values())
 
 
@@ -179,8 +179,8 @@ def correlation(d):
     a = [float(j) for j in d]
     b = a[1:] + [a[0]]
     scct1 = sum(i * j for i, j in zip(d, b))
-    scct2 = sum(d)**2
-    scct3 = sum(j*j for j in d)
+    scct2 = sum(d) ** 2
+    scct3 = sum(j * j for j in d)
     scc = totalc * scct3 - scct2
     if scc == 0:
         raise ValueError
@@ -263,18 +263,13 @@ def monte_carlo(d):
     """
     MONTEN = 6
     incirc = (256.0 ** (MONTEN // 2) - 1) ** 2
-    #d = np.array(d, copy=True, dtype=np.float64)
-    #d = d[: len(d) // MONTEN * MONTEN]
-    d = (float(j) for j in d[:len(d)//MONTEN*MONTEN])
-    #values = np.sum(d.reshape((-1, MONTEN // 2)) * np.array([256 ** 2, 256, 1]), axis=1)
-    intermediate = (i*j for i, j in zip(d, it.cycle([256 ** 2, 256, 1])))
-    args = [intermediate]*3
+    d = (float(j) for j in d[: len(d) // MONTEN * MONTEN])
+    intermediate = (i * j for i, j in zip(d, it.cycle([256 ** 2, 256, 1])))
+    args = [intermediate] * 3
     values = [sum(j) for j in it.zip_longest(*args)]
     montex = values[0::2]
     montey = values[1::2]
-    #dist2 = montex * montex + montey * montey
     dist2 = (i * i + j * j for i, j in zip(montex, montey))
-    #inmont = np.count_nonzero(dist2 <= incirc)
     inmont = sum(j <= incirc for j in dist2)
     montepi = 4 * inmont / len(montex)
     return montepi
