@@ -4,7 +4,7 @@ ENT in Python
 :date: 2017-02-18
 :author: Roland Smith
 
-.. Last modified: 2020-10-24T11:37:11+0200
+.. Last modified: 2020-10-24T11:54:11+0200
 
 
 Introduction
@@ -23,6 +23,9 @@ handling the data. The fact that operators on numpy arrays act by element
 makes the algorithms simpler and more elegant.
 
 .. _numpy: http://www.numpy.org/
+
+A version that not requires numpy_ is contained in ``ent_without_numpy.py``.
+It gives the same output, but is a lot slower.
 
 Development is done on Python 3.9+.
 
@@ -77,7 +80,7 @@ Testing
 This program comes with a test suite, which requires py.test.
 To run the tests, use the command::
 
-    py.test -v test/
+    py.test -v test/*.py
 
 Example output::
 
@@ -86,13 +89,19 @@ Example output::
     cachedir: .pytest_cache
     rootdir: /home/rsmith/src/progs/ent
     plugins: pylama-7.7.1
-    collected 6 items
+    collected 12 items
 
-    test/test_routines.py::test_size PASSED                                                           [ 16%]
-    test/test_routines.py::test_mean PASSED                                                           [ 33%]
-    test/test_routines.py::test_entropy PASSED                                                        [ 50%]
-    test/test_routines.py::test_chisquare PASSED                                                      [ 66%]
-    test/test_routines.py::test_correlation PASSED                                                    [ 83%]
-    test/test_routines.py::test_mc PASSED                                                             [100%]
+    test/test-numpy.py::test_size PASSED                                                              [  8%]
+    test/test-numpy.py::test_mean PASSED                                                              [ 16%]
+    test/test-numpy.py::test_entropy PASSED                                                           [ 25%]
+    test/test-numpy.py::test_chisquare PASSED                                                         [ 33%]
+    test/test-numpy.py::test_correlation PASSED                                                       [ 41%]
+    test/test-numpy.py::test_mc PASSED                                                                [ 50%]
+    test/test-without-numpy.py::test_size PASSED                                                      [ 58%]
+    test/test-without-numpy.py::test_mean PASSED                                                      [ 66%]
+    test/test-without-numpy.py::test_entropy PASSED                                                   [ 75%]
+    test/test-without-numpy.py::test_chisquare PASSED                                                 [ 83%]
+    test/test-without-numpy.py::test_correlation PASSED                                               [ 91%]
+    test/test-without-numpy.py::test_mc PASSED                                                        [100%]
 
-    ======================================= 6 passed in 0.29 seconds ========================================
+    ====================================== 12 passed in 11.23 seconds =======================================
