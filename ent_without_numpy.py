@@ -5,9 +5,11 @@
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-08-25T23:37:50+0200
-# Last modified: 2020-10-24T12:01:47+0200
+# Last modified: 2021-05-28T14:23:55+0200
 """
 Partial implementation of the ‘ent’ program by John "Random" Walker in Python.
+
+This version does not use numpy.
 
 See http://www.fourmilab.ch/random/ for the original.
 """
@@ -122,12 +124,12 @@ def readdata(name):
         name: Path of the file to read
 
     Returns:
-        data: numpy array containing the byte values.
-        cnts: numpy array containing the occurance of each byte.
+        data: file contents as bytes.
+        cnts: list containing the occurance of each byte value 0−255.
     """
     with open(name, "rb") as inf:
         data = inf.read()
-    cnts = collections.Counter(data)
+    cnts = collections.Counter(data).values()
     return data, cnts
 
 
@@ -136,13 +138,13 @@ def entropy(counts):
     Calculate the entropy of the data represented by the counts array.
 
     Arguments:
-        counts: collections.Counter
+        counts: list containing the occurance of each byte value 0−255.
 
     Returns:
         Entropy in bits per byte.
     """
-    sz = sum(counts.values())
-    p = [n / sz for n in counts.values()]
+    sz = sum(counts)
+    p = [n / sz for n in counts]
     c = math.log(256)
     ent = -sum(n * math.log(n) / c for n in p)
     return ent * 8
@@ -156,13 +158,13 @@ def pearsonchisquare(counts):
     #Discrete_uniform_distribution]
 
     Arguments:
-        counts: collections.Counter
+        counts: list containing the occurance of each byte value 0−255.
 
     Returns:
         χ² value
     """
-    np = sum(counts.values()) / 256
-    return sum((c - np) ** 2 / np for c in counts.values())
+    np = sum(counts) / 256
+    return sum((c - np) ** 2 / np for c in counts)
 
 
 def correlation(d):
@@ -170,7 +172,7 @@ def correlation(d):
     Calculate the serial correlation coefficient of the data.
 
     Arguments:
-        d: bytes
+        d: data in the form of bytes.
 
     Returns:
         Serial correlation coeffiecient.
@@ -206,7 +208,7 @@ def pochisq(x, df=255):
       10% indicate the sequence is “almost suspect”.
 
     Arguments:
-        x: Obtained chi-square value.
+        x: Obtained χ² value.
         df: Degrees of freedom, defaults to 255 for random bytes.
 
     Returns:
@@ -256,7 +258,7 @@ def monte_carlo(d):
     Calculate Monte Carlo value for π.
 
     Arguments:
-        d: numpy array of unsigned byte values.
+        d:  byte values.
 
     Returns:
         Approximation of π
