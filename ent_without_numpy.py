@@ -1,11 +1,11 @@
 #!/usr/bin/env python
-# file: ent.py
+# file: ent_without_numpy.py
 # vim:fileencoding=utf-8:fdm=marker:ft=python
 #
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-08-25T23:37:50+0200
-# Last modified: 2021-05-28T14:23:55+0200
+# Last modified: 2021-05-29T00:11:17+0200
 """
 Partial implementation of the ‘ent’ program by John "Random" Walker in Python.
 
