@@ -4,7 +4,7 @@ ENT in Python
 :date: 2017-02-18
 :author: Roland Smith
 
-.. Last modified: 2020-10-24T11:54:11+0200
+.. Last modified: 2022-01-21T11:22:03+0100
 
 
 Introduction
@@ -64,14 +64,11 @@ Next to normal text output, terse output is also implemented.
     0,File-bytes,Entropy,Chi-square,Mean,Monte-Carlo-Pi,Serial-Correlation
     1,10485760,7.999982,259.031104,127.511638,3.139878,-0.000296
 
-The following are not implemented;
+The following will not be implemented;
 
 * handling input as bits,
 * printing occurrence counts,
 * folding upper/lowercase.
-
-While occurrence counts might be implemented, the remaining will
-likely not be implemented.
 
 
 Testing
