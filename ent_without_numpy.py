@@ -5,7 +5,7 @@
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-08-25T23:37:50+0200
-# Last modified: 2022-01-21T11:55:53+0100
+# Last modified: 2022-01-21T12:46:44+0100
 """
 Partial implementation of the ‘ent’ program by John "Random" Walker in Python.
 
@@ -265,8 +265,12 @@ def monte_carlo(d):
     """
     MONTEN = 6
     incirc = (256.0 ** (MONTEN // 2) - 1) ** 2
-    d = (float(j) for j in d[: len(d) // MONTEN * MONTEN])
-    intermediate = (i * j for i, j in zip(d, it.cycle([256 ** 2, 256, 1])))
+    intermediate = (
+        float(i) * j
+        for i, j in zip(
+            d[: len(d) // MONTEN * MONTEN], it.cycle((256.0 ** 2, 256.0, 1.0))
+        )
+    )
     args = [intermediate] * 3
     values = [sum(j) for j in it.zip_longest(*args)]
     montex = values[0::2]
