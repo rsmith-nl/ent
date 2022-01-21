@@ -5,7 +5,7 @@
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-08-25T23:37:50+0200
-# Last modified: 2021-05-29T00:11:17+0200
+# Last modified: 2022-01-21T11:55:53+0100
 """
 Partial implementation of the ‘ent’ program by John "Random" Walker in Python.
 
@@ -75,7 +75,7 @@ def terseout(data, e, chi2, p, d, scc, mc):
     """
     print("0,File-bytes,Entropy,Chi-square,Mean," "Monte-Carlo-Pi,Serial-Correlation")
     n = len(data)
-    m = stat.mean(data)
+    m = stat.fmean(data)
     print(f"1,{n},{e:.6f},{chi2:.6f},{m:.6f},{mc:.6f},{scc}")
 
 
@@ -109,7 +109,7 @@ def textout(data, e, chi2, p, d, scc, mc):
         print("is close to random, but not perfect.")
     else:
         print("looks random.")
-    m = stat.mean(data)
+    m = stat.fmean(data)
     print(f"- Arithmetic mean value of data bytes is {m:.4f} (random = 127.5).")
     err = 100 * (math.fabs(PI - mc) / PI)
     print(f"- Monte Carlo value for π is {mc:.9f} (error {err:.2f}%).")
