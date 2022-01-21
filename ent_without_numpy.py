@@ -5,7 +5,7 @@
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-08-25T23:37:50+0200
-# Last modified: 2022-01-21T13:09:06+0100
+# Last modified: 2022-01-21T13:13:46+0100
 """
 Partial implementation of the ‘ent’ program by John "Random" Walker in Python.
 
@@ -180,9 +180,9 @@ def correlation(d):
     totalc = len(d)
     a = [float(j) for j in d]
     b = a[1:] + [a[0]]
-    scct1 = sum(i * j for i, j in zip(d, b))
-    scct2 = sum(d) ** 2
-    scct3 = sum(j * j for j in d)
+    scct1 = sum(i * j for i, j in zip(a, b))
+    scct2 = sum(a) ** 2
+    scct3 = sum(j * j for j in a)
     scc = totalc * scct3 - scct2
     if scc == 0:
         raise ValueError
