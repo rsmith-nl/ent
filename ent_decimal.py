@@ -23,7 +23,7 @@ import statistics as stat
 import sys
 
 __version__ = "2021.05.29"
-PI = Decimal('3.14159265358979323846')
+PI = Decimal("3.14159265358979323846")
 
 
 def main(argv):
@@ -77,7 +77,7 @@ def terseout(data, e, chi2, p, d, scc, mc):
     """
     print("0,File-bytes,Entropy,Chi-square,Mean," "Monte-Carlo-Pi,Serial-Correlation")
     n = len(data)
-    m = sum(Decimal(j) for j in data)/n
+    m = sum(Decimal(j) for j in data) / n
     print(f"1,{n},{e},{chi2},{m},{mc},{scc}")
 
 
@@ -111,7 +111,7 @@ def textout(data, e, chi2, p, d, scc, mc):
         print("is close to random, but not perfect.")
     else:
         print("looks random.")
-    m = sum(Decimal(j) for j in data)/len(data)
+    m = sum(Decimal(j) for j in data) / len(data)
     print(f"- Arithmetic mean value of data bytes is {m} (random = 127.5).")
     err = 100 * ((PI - mc).copy_abs() / PI)
     print(f"- Monte Carlo value for π is {mc} (error {err:.2f}%).")
@@ -223,8 +223,8 @@ def pochisq(x, df=255):
     if x <= 0.0 or df < 1:
         return 1.0
     # Constants
-    LOG_SQRT_PI = Decimal('0.5723649429247000870717135')  # log(√π)
-    I_SQRT_PI = Decimal('0.5641895835477562869480795')  # 1/√π
+    LOG_SQRT_PI = Decimal("0.5723649429247000870717135")  # log(√π)
+    I_SQRT_PI = Decimal("0.5641895835477562869480795")  # 1/√π
     BIGX = Decimal(20)
     a = Decimal(0.5) * x
     even = df % 2 == 0
