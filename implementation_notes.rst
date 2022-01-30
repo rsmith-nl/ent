@@ -4,10 +4,13 @@ Implementation notes for ent
 :date: 2015-05-31
 :author: Roland Smith
 
-.. Last modified: 2022-01-21T11:18:57+0100
+.. Last modified: 2022-01-30T20:21:43+0100
 
 Reading the data
 ================
+
+With numpy
+++++++++++
 
 The fastest way to read bytes with numpy is to use ``fromfile``;
 
@@ -58,6 +61,29 @@ An example (with random data);
         0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1, 1, 1, 0, 1, 0, 0, 0, 1, 0, 1,
         0, 0, 0, 1, 1, 0, 2, 1, 0, 1, 1])
 
+Without numpy
++++++++++++++
+
+We read the file in binary mode and use ``collections.Counter``.
+
+.. code-block:: python
+
+    def readdata(name):
+        """
+        Read the data from a file and count byte occurences.
+
+        Arguments:
+            name: Path of the file to read
+
+        Returns:
+            data: file contents as bytes.
+            cnts: list containing the occurance count of each byte value 0−255.
+        """
+        with open(name, "rb") as inf:
+            data = inf.read()
+        cnts = collections.Counter(data).values()
+        return data, cnts
+
 
 Entropy calculation
 ===================
@@ -71,7 +97,11 @@ where i is every possible byte value.
 
 If the log₂₅₆ cannot be calculated directly, we can use log(P(i))/log(256)
 instead. Since we cannot take the logarithm of 0, we remove all 0 counts, and
-we convert counts to relative frequencies;
+we convert counts to relative frequencies.
+
+
+With numpy
+++++++++++
 
 .. code-block:: python
 
@@ -129,13 +159,41 @@ bits per byte.
     Out[9]: 6.281209564709828
 
 
+Without numpy
++++++++++++++
+
+We use a list comprehension and a generator expressions instead.
+
+.. code-block:: python
+
+    def entropy(counts):
+        """
+        Calculate the entropy of the data represented by the counts array.
+
+        Arguments:
+            counts: list containing the occurance of each byte value 0−255.
+
+        Returns:
+            Entropy in bits per byte.
+        """
+        sz = sum(counts)
+        p = [n / sz for n in counts]
+        c = math.log(256)
+        ent = -sum(n * math.log(n) / c for n in p)
+        return ent * 8
+
+
+
 Calculating the χ² value
 ========================
 
 The calculation given on the `wikipedia page`_ can be easily converted into
-Python using numpy;
+Python.
 
 .. _wikipedia page: http://en.wikipedia.org/wiki/Pearson%27s_chi-squared_test#Calculating_the_test-statistic
+
+With numpy
+++++++++++
 
 .. code-block:: python
 
@@ -143,9 +201,33 @@ Python using numpy;
         np = sum(counts)/256
         return sum((counts - np)**2/np)
 
+Without numpy
++++++++++++++
+
+.. code-block:: python
+
+    def pearsonchisquare(counts):
+        """
+        Calculate Pearson's χ² (chi square) test for an array of bytes.
+
+        See [http://en.wikipedia.org/wiki/Pearson%27s_chi-squared_test
+        #Discrete_uniform_distribution]
+
+        Arguments:
+            counts: list containing the occurance of each byte value 0−255.
+
+        Returns:
+            χ² value
+        """
+        np = sum(counts) / 256
+        return sum((c - np) ** 2 / np for c in counts)
+
 
 Calculating the serial correlation coefficient
 ==============================================
+
+With numpy
+++++++++++
 
 The code for this calculation was written after tracing the execution of the
 calculation in the original C code from the file ``randtest.c``.  The
@@ -222,6 +304,11 @@ Since this value is not zero, we continue::
 
     scc = (totalc * scct1 - scct2) / scc
     scc = (4 * 182 - 1089) / 507 = -0.712
+
+Without numpy
++++++++++++++
+
+The code is basically a simple translation of the C code.
 
 
 Implementation of poz()
@@ -323,6 +410,9 @@ The square of the radius of the circle is given by:
 If ``dist2`` is smaller than ``incirc``, the point is counted as being inside
 the circle.
 
+With numpy
+++++++++++
+
 .. code-block:: python
 
     In [1]: import os
@@ -370,3 +460,25 @@ points one would calculate π as follows:
 .. code-block:: python
 
     montepi = 4 * inmont/len(montex)
+
+Without numpy
++++++++++++++
+
+Here we use a slightly different ``values``, which converts the
+``bytes`` into an array of ``float`` directly, per 3 bytes, MSB first.
+
+.. code-block:: python
+
+    def monte_carlo(d):
+        values = [
+            a * 65536.0 + b * 256.0 + c * 1.0 for a, b, c in
+            zip(d[0::3], d[1::3], d[2::3])
+        ]
+        montex = values[0::2]
+        montey = values[1::2]
+        dist2 = (i * i + j * j for i, j in zip(montex, montey))
+        incirc = (256.0 ** 3 - 1) ** 2
+        inmont = sum(j <= incirc for j in dist2)
+        montepi = 4 * inmont / len(montex)
+        return montepi
+
