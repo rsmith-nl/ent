@@ -5,7 +5,7 @@
 # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
 # SPDX-License-Identifier: MIT
 # Created: 2012-08-25T23:37:50+0200
-# Last modified: 2022-01-21T13:13:46+0100
+# Last modified: 2022-01-30T20:18:04+0100
 """
 Partial implementation of the ‘ent’ program by John "Random" Walker in Python.
 
@@ -16,7 +16,8 @@ See http://www.fourmilab.ch/random/ for the original.
 
 import argparse
 import collections
-import itertools as it
+
+# import itertools as it
 import math
 import statistics as stat
 import sys
@@ -263,19 +264,14 @@ def monte_carlo(d):
     Returns:
         Approximation of π
     """
-    MONTEN = 6
-    incirc = (256.0 ** (MONTEN // 2) - 1) ** 2
-    intermediate = (
-        float(i) * j
-        for i, j in zip(
-            d[: len(d) // MONTEN * MONTEN], it.cycle((256.0 ** 2, 256.0, 1.0))
-        )
-    )
-    values = [sum(j) for j in zip(intermediate, intermediate, intermediate)]
+    values = [
+        a * 65536.0 + b * 256.0 + c * 1.0 for a, b, c in zip(d[0::3], d[1::3], d[2::3])
+    ]
     montex = values[0::2]
     montey = values[1::2]
     dist2 = (i * i + j * j for i, j in zip(montex, montey))
-    inmont = sum(j <= incirc for j in dist2)
+    # constant in the next line is (256.0 ** 3 - 1) ** 2
+    inmont = sum(k <= 281474943156225.0 for k in dist2)
     montepi = 4 * inmont / len(montex)
     return montepi
 
