@@ -1,2 +1,4 @@
 *.pyc
+ent-compiled
+ent-compiled.c
 .cache/
