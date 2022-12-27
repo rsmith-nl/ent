@@ -4,7 +4,7 @@ ENT in Python
 :date: 2017-02-18
 :author: Roland Smith
 
-.. Last modified: 2022-01-29T22:24:40+0100
+.. Last modified: 2022-12-27T18:13:28+0100
 
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/psf/black
@@ -72,6 +72,21 @@ The following will not be implemented;
 * printing occurrence counts,
 * folding upper/lowercase.
 
+Versions
+========
+
+This repository contains different versions of ``ent``:
+
+* ``ent.py`` uses ``numpy``. This is the original and currently the fastest version.
+  On my machine, it runs within 0.4 second on ``test/random.dat``.
+* ``ent_without_numpy.py`` only uses modules from the standard library.
+  This is approximately a factor of 9.5 slower than the numpy version.
+* A Makefile is provided that compiled ``ent_without_numpy.py`` with ``cython``.
+  (written for CPython 3.9 on UNIX) This is approximately 7× slower than
+  the numpy version.
+* ``ent_decimal.py`` used ``Decimal`` numbers. Approximately 38× slower than
+  the numpy version.
+
 
 Testing
 =======
@@ -83,24 +98,24 @@ To run the tests, use the command::
 
 Example output::
 
-    ========================================== test session starts ==========================================
-    platform freebsd12 -- Python 3.9.0, pytest-4.5.0, py-1.9.0, pluggy-0.13.1 -- /usr/local/bin/python3.9
-    cachedir: .pytest_cache
-    rootdir: /home/rsmith/src/progs/ent
-    plugins: pylama-7.7.1
-    collected 12 items
+  ========================================== test session starts ==========================================
+  platform freebsd13 - Python 3.9.16, pytest-7.1.3, pluggy-1.0.0 - /usr/local/bin/python3.9
+  cachedir: .pytest_cache
+  rootdir: /zstorage/home/rsmith/src/progs/ent
+  plugins: pylama-7.7.1, black-0.3.12
+  collected 12 items
 
-    test/test-numpy.py::test_size PASSED                                                              [  8%]
-    test/test-numpy.py::test_mean PASSED                                                              [ 16%]
-    test/test-numpy.py::test_entropy PASSED                                                           [ 25%]
-    test/test-numpy.py::test_chisquare PASSED                                                         [ 33%]
-    test/test-numpy.py::test_correlation PASSED                                                       [ 41%]
-    test/test-numpy.py::test_mc PASSED                                                                [ 50%]
-    test/test-without-numpy.py::test_size PASSED                                                      [ 58%]
-    test/test-without-numpy.py::test_mean PASSED                                                      [ 66%]
-    test/test-without-numpy.py::test_entropy PASSED                                                   [ 75%]
-    test/test-without-numpy.py::test_chisquare PASSED                                                 [ 83%]
-    test/test-without-numpy.py::test_correlation PASSED                                               [ 91%]
-    test/test-without-numpy.py::test_mc PASSED                                                        [100%]
+  test/test-numpy.py::test_size PASSED                                                              [  8%]
+  test/test-numpy.py::test_mean PASSED                                                              [ 16%]
+  test/test-numpy.py::test_entropy PASSED                                                           [ 25%]
+  test/test-numpy.py::test_chisquare PASSED                                                         [ 33%]
+  test/test-numpy.py::test_correlation PASSED                                                       [ 41%]
+  test/test-numpy.py::test_mc PASSED                                                                [ 50%]
+  test/test-without-numpy.py::test_size PASSED                                                      [ 58%]
+  test/test-without-numpy.py::test_mean PASSED                                                      [ 66%]
+  test/test-without-numpy.py::test_entropy PASSED                                                   [ 75%]
+  test/test-without-numpy.py::test_chisquare PASSED                                                 [ 83%]
+  test/test-without-numpy.py::test_correlation PASSED                                               [ 91%]
+  test/test-without-numpy.py::test_mc PASSED                                                        [100%]
 
-    ====================================== 12 passed in 11.23 seconds =======================================
+  ========================================== 12 passed in 7.87s ===========================================
