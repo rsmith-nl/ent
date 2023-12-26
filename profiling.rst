@@ -1,11 +1,12 @@
 Profiling ``ent``
 #################
 
+:modified: 2023-12-26
 :date: 2022-01-21 11:28:35
 :tags: profiling, python3
 :author: Roland Smith
 
-.. Last modified: 2022-01-21T13:44:05+0100
+.. Last modified: 2023-12-26T14:59:34+0100
 .. vim:spelllang=en
 
 The program ``ent_without_numpy.py`` is a lot slower than the version that
@@ -282,3 +283,39 @@ the list of floats ``a``.
 This shortened the real run-time to 5.9 s and the user time to 5.5 s.
 
 At this point I don't see any obvious improvements anymore.
+
+Different Python versions
+-------------------------
+
+The default Python on my platform is 3.9. However, the most recent available
+Python, 3.11 has significant speed improvements, so let's try that as well.
+
+Python 3.9 timing::
+
+   > time python3.9 ent_without_numpy.py test/random.dat
+   - Entropy is 7.999982 bits per byte.
+  - Optimum compression would reduce the size
+    of this 10485760 byte file by 0%.
+  - χ² distribution for 10485760 samples is 259.03, and randomly
+    would exceed this value 41.80% of the times.
+    According to the χ² test, this sequence looks random.
+  - Arithmetic mean value of data bytes is 127.5116 (random = 127.5).
+  - Monte Carlo value for π is 3.139875958 (error 0.05%).
+  - Serial correlation coefficient is -0.000296 (totally uncorrelated = 0.0).
+  3.184u 0.062s 0:03.24 100.0%    5+167k 0+0io 0pf+0w
+
+Python 3.11 run::
+
+  > time python3.11 ent_without_numpy.py test/random.dat
+  - Entropy is 7.999982 bits per byte.
+  - Optimum compression would reduce the size
+    of this 10485760 byte file by 0%.
+  - χ² distribution for 10485760 samples is 259.03, and randomly
+    would exceed this value 41.80% of the times.
+    According to the χ² test, this sequence looks random.
+  - Arithmetic mean value of data bytes is 127.5116 (random = 127.5).
+  - Monte Carlo value for π is 3.139875958 (error 0.05%).
+  - Serial correlation coefficient is -0.000296 (totally uncorrelated = 0.0).
+  2.272u 0.110s 0:02.38 100.0%    5+167k 0+0io 0pf+0w
+
+Using Python 3.11 is a significant improvement compared to 3.9.
