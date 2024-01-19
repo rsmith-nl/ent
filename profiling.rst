@@ -6,7 +6,7 @@ Profiling ``ent``
 :tags: profiling, python3
 :author: Roland Smith
 
-.. Last modified: 2023-12-26T14:59:34+0100
+.. Last modified: 2024-01-19T20:39:08+0100
 .. vim:spelllang=en
 
 The program ``ent_without_numpy.py`` is a lot slower than the version that
@@ -319,3 +319,120 @@ Python 3.11 run::
   2.272u 0.110s 0:02.38 100.0%    5+167k 0+0io 0pf+0w
 
 Using Python 3.11 is a significant improvement compared to 3.9.
+
+Using pyinstrument
+------------------
+
+Version 2022.08.27 of ``ent_without_numpy.py`` was profiled using
+pyinstrument::
+
+  > python -m pyinstrument ent_without_numpy.py test/random.dat
+  - Entropy is 7.999982 bits per byte.
+  - Optimum compression would reduce the size
+    of this 10485760 byte file by 0%.
+  - χ² distribution for 10485760 samples is 259.03, and randomly
+    would exceed this value 41.80% of the times.
+    According to the χ² test, this sequence looks random.
+  - Arithmetic mean value of data bytes is 127.5116 (random = 127.5).
+  - Monte Carlo value for π is 3.139875958 (error 0.05%).
+  - Serial correlation coefficient is -0.000296 (totally uncorrelated = 0.0).
+
+    _     ._   __/__   _ _  _  _ _/_   Recorded: 20:12:47  Samples:  4728
+  /_//_/// /_\ / //_// / //_'/ //     Duration: 6.241     CPU time: 6.241
+  /   _/                      v4.6.1
+
+  Program: /usr/local/lib/python3.9/site-packages/pyinstrument-4.6.1-py3.9-freebsd-14.0-RELEASE-p3-amd64.egg/pyinstrument/__main__.py ent_without_numpy.py test/random.dat
+
+  6.239 <module>  ent_without_numpy.py:9
+  └─ 6.235 main  ent_without_numpy.py:27
+    ├─ 4.129 correlation  ent_without_numpy.py:169
+    │  ├─ 1.700 [self]  ent_without_numpy.py
+    │  ├─ 1.253 <genexpr>  ent_without_numpy.py:181
+    │  ├─ 1.066 <genexpr>  ent_without_numpy.py:183
+    │  └─ 0.110 sum  <built-in>
+    ├─ 1.429 monte_carlo  ent_without_numpy.py:254
+    │  ├─ 0.658 <listcomp>  ent_without_numpy.py:264
+    │  ├─ 0.566 <genexpr>  ent_without_numpy.py:271
+    │  │  ├─ 0.302 [self]  ent_without_numpy.py
+    │  │  └─ 0.264 <genexpr>  ent_without_numpy.py:269
+    │  └─ 0.205 [self]  ent_without_numpy.py
+    ├─ 0.493 readdata  ent_without_numpy.py:118
+    │  └─ 0.489 Counter.__init__  collections/__init__.py:581
+    │        [3 frames hidden]  collections, <built-in>
+    └─ 0.141 textout  ent_without_numpy.py:81
+        └─ 0.141 fmean  statistics.py:321
+              [2 frames hidden]  statistics, <built-in>
+
+  To view this report with different options, run:
+      pyinstrument --load-prev 2024-01-19T20-12-47 [options]
+
+Line 181 is:
+
+.. code-block:: python
+
+  scct1 = sum(i * j for i, j in zip(d, b))
+
+And line 183:
+
+.. code-block:: python
+
+  scct3 = sum(j * j for j in d)
+
+These are generator expressions operating on ``bytes`` objects.
+Apart from using ``numpy``, I'm not sure what I should do to make them faster.
+
+Converting ``d`` and ``b`` into ``array.array('B')`` shaved ≈0.08 second
+off the runtime of ``correlation``.
+The diff of the code is below.
+
+.. code-block:: diff
+
+  > git diff ent_without_numpy.py
+  diff --git a/ent_without_numpy.py b/ent_without_numpy.py
+  index de05a42..c1bf7e6 100644
+  --- a/ent_without_numpy.py
+  +++ b/ent_without_numpy.py
+  @@ -5,7 +5,7 @@
+  # Copyright © 2018 R.F. Smith <rsmith@xs4all.nl>.
+  # SPDX-License-Identifier: MIT
+  # Created: 2012-08-25T23:37:50+0200
+  -# Last modified: 2022-08-27T10:50:17+0200
+  +# Last modified: 2024-01-19T20:38:00+0100
+  """
+  Partial implementation of the ‘ent’ program by John "Random" Walker in Python.
+  
+  @@ -14,13 +14,14 @@ This version does not use numpy.
+  See http://www.fourmilab.ch/random/ for the original.
+  """
+  
+  +import array
+  import argparse
+  import collections
+  import math
+  import statistics as stat
+  import sys
+  
+  -__version__ = "2022.08.27"
+  +__version__ = "2024.01.19"
+  PI = 3.14159265358979323846
+  
+  
+  @@ -176,11 +177,13 @@ def correlation(d):
+      Returns:
+          Serial correlation coeffiecient.
+      """
+  -    totalc = len(d)
+  -    b = d[1:] + bytes(d[0])
+  -    scct1 = sum(i * j for i, j in zip(d, b))
+  -    scct2 = sum(d) ** 2
+  -    scct3 = sum(j * j for j in d)
+  +    da = array.array('B', d)
+  +    totalc = len(da)
+  +    ba = array.array('B', da[1:])
+  +    ba.append(da[0])
+  +    scct1 = sum(i * j for i, j in zip(da, ba))
+  +    scct2 = sum(da) ** 2
+  +    scct3 = sum(j * j for j in da)
+      scc = totalc * scct3 - scct2
+      if scc == 0:
+          raise ValueError
