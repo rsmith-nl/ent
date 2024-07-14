@@ -6,7 +6,7 @@ Profiling ``ent``
 :tags: profiling, python3
 :author: Roland Smith
 
-.. Last modified: 2024-01-19T20:39:08+0100
+.. Last modified: 2024-07-14T12:05:08+0200
 .. vim:spelllang=en
 
 The program ``ent_without_numpy.py`` is a lot slower than the version that
@@ -436,3 +436,7 @@ The diff of the code is below.
       scc = totalc * scct3 - scct2
       if scc == 0:
           raise ValueError
+
+However, when Python 3.11 became the default python version on FreeBSD, the
+previous version using ``bytes`` was faster again. so the change to arrays was
+reverted.
